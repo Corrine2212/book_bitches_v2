@@ -115,15 +115,15 @@ body.green{
 /* ══════════════════════════════════════════════
    MOBILE BOTTOM NAV
 ══════════════════════════════════════════════ */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--nav);border-top:1px solid var(--border);display:flex;z-index:50;padding-bottom:env(safe-area-inset-bottom);transition:background .35s}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;background:none;border:none;cursor:pointer;color:var(--text3);transition:color .2s;font-family:inherit;position:relative}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--nav);border-top:1px solid var(--border);display:flex;z-index:50;padding-bottom:max(env(safe-area-inset-bottom),16px);transition:background .35s}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px 0 8px;background:none;border:none;cursor:pointer;color:var(--text3);transition:color .2s;font-family:inherit;position:relative}
 .nav-btn.active{color:var(--accent)}
 .nav-btn svg{width:21px;height:21px;transition:transform .2s}
 .nav-btn.active svg{transform:scale(1.1)}
 .nav-btn span{font-size:10px;font-weight:600;letter-spacing:.04em}
 .nav-badge{position:absolute;top:6px;right:calc(50% - 18px);background:var(--accent);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 4px}
 .nav-badge.show{display:flex}
-.fab{position:fixed;bottom:calc(72px + env(safe-area-inset-bottom) + 12px);right:16px;width:54px;height:54px;border-radius:50%;background:var(--accent);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 22px var(--accent-g);z-index:45;transition:transform .18s,box-shadow .18s}
+.fab{position:fixed;bottom:calc(92px + max(env(safe-area-inset-bottom),16px));right:16px;width:54px;height:54px;border-radius:50%;background:var(--accent);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 22px var(--accent-g);z-index:45;transition:transform .18s,box-shadow .18s}
 .fab:hover{transform:scale(1.1);box-shadow:0 6px 30px var(--accent-g)}
 .fab:active{transform:scale(.94)}
 .fab svg{width:24px;height:24px}
@@ -131,7 +131,7 @@ body.green{
 /* ══════════════════════════════════════════════
    CONTENT & PAGES
 ══════════════════════════════════════════════ */
-.content{flex:1;padding:16px 16px calc(72px + env(safe-area-inset-bottom))}
+.content{flex:1;padding:16px 16px calc(90px + max(env(safe-area-inset-bottom),16px))}
 @media(min-width:800px){.content{padding:24px 28px 32px}}
 .page{display:none}
 .page.active{display:block;animation:fadeUp .22s ease}
@@ -152,8 +152,8 @@ body.green{
 .book-card{background:var(--card);border-radius:10px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s;position:relative}
 .book-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px var(--shadow);border-color:var(--accent)}
 .book-card:active{transform:scale(.97)}
-.book-cover-wrap{width:100%;aspect-ratio:2/3;background:var(--card2);position:relative;overflow:hidden}
-.book-cover-img{width:100%;height:100%;object-fit:cover;transition:opacity .3s}
+.book-cover-wrap{width:100%;aspect-ratio:2/3;background:var(--card2);position:relative;overflow:hidden;display:block}
+.book-cover-img{width:100%;height:100%;object-fit:cover;transition:opacity .3s;display:block;position:absolute;inset:0}
 .book-cover-fallback{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;text-align:center;position:relative}
 .spine-stripe{position:absolute;left:0;top:0;bottom:0;width:10px}
 .fallback-title{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(9px,2.2vw,12px);color:var(--text);line-height:1.3;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;padding-left:14px;word-break:break-word}
@@ -169,7 +169,7 @@ body.green{
 /* ══════════════════════════════════════════════
    RECENT LIST
 ══════════════════════════════════════════════ */
-.recent-list{display:flex;flex-direction:column;gap:8px}
+.recent-list{display:flex;flex-direction:column;gap:8px}@media(min-width:800px){.recent-list{max-width:680px}}
 .recent-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;transition:transform .15s,border-color .15s;cursor:pointer}
 .recent-item:hover{transform:translateX(4px);border-color:var(--accent)}
 .recent-cover{width:42px;height:60px;border-radius:5px;background:var(--card2);flex-shrink:0;overflow:hidden;position:relative}
@@ -243,7 +243,7 @@ textarea.form-input{resize:vertical;min-height:72px}
 /* ══════════════════════════════════════════════
    DETAIL MODAL
 ══════════════════════════════════════════════ */
-.detail-cover-wrap{width:110px;height:165px;border-radius:10px;overflow:hidden;background:var(--card2);flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:32px}
+.detail-cover-wrap{width:110px;height:165px;border-radius:10px;overflow:hidden;background:var(--card2);flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:32px;position:relative}
 .detail-cover-wrap img{width:100%;height:100%;object-fit:cover}
 .detail-hero{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
 .detail-info{flex:1;min-width:0;padding-top:4px}
@@ -334,6 +334,18 @@ textarea.form-input{resize:vertical;min-height:72px}
 .loading-logo{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--text);margin-bottom:6px}
 .loading-logo em{color:var(--accent);font-style:normal}
 .loading-spinner{width:28px;height:28px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin-top:20px}
+
+/* ── READ BADGE ── */
+.read-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(90,173,110,.18);border:1px solid rgba(90,173,110,.35);color:var(--ok);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:600;margin-top:6px}
+.book-read-tick{position:absolute;bottom:6px;right:6px;background:var(--ok);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;border:2px solid var(--bg)}
+.recent-read-tick{font-size:12px;color:var(--ok);margin-left:2px;flex-shrink:0}
+/* ── COVER URL ROW ── */
+.cover-url-row{display:flex;gap:6px;margin-top:8px;align-items:center}
+.cover-url-input{flex:1;background:var(--input);border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--text);font-family:inherit;font-size:12px;outline:none;transition:border-color .2s;caret-color:var(--accent)}
+.cover-url-input:focus{border-color:var(--accent)}
+.cover-url-input::placeholder{color:var(--text3)}
+.cover-url-btn{padding:7px 11px;border-radius:8px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-family:inherit;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap;font-weight:500}
+.cover-url-btn:hover{border-color:var(--accent);color:var(--accent)}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -410,7 +422,7 @@ textarea.form-input{resize:vertical;min-height:72px}
       <!-- MY SHELF -->
       <div class="page" id="page-my">
         <div class="section-head">
-          <div class="section-title">My Shelf</div>
+          <div class="section-title">Connie's Shelf</div>
           <div class="section-sub" id="my-sub">0 books</div>
         </div>
         <div id="my-grid" class="books-grid"></div>
@@ -468,7 +480,7 @@ textarea.form-input{resize:vertical;min-height:72px}
             <div><div class="settings-label">Library Stats</div></div>
             <div class="stats-grid">
               <div class="stat-tile"><div class="stat-num" id="st-total">0</div><div class="stat-label">Total Books</div></div>
-              <div class="stat-tile"><div class="stat-num" id="st-mine">0</div><div class="stat-label">My Books</div></div>
+              <div class="stat-tile"><div class="stat-num" id="st-mine">0</div><div class="stat-label">Connie's Books</div></div>
               <div class="stat-tile"><div class="stat-num" id="st-beth">0</div><div class="stat-label">Beth's Books</div></div>
               <div class="stat-tile"><div class="stat-num" id="st-last" style="font-size:15px;padding-top:4px">—</div><div class="stat-label">Last Added</div></div>
             </div>
@@ -519,7 +531,7 @@ textarea.form-input{resize:vertical;min-height:72px}
       </button>
       <button class="nav-btn" id="nav-my" onclick="navigate('my')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        <span>My Shelf</span><span class="nav-badge" id="badge-my"></span>
+        <span>Connie's</span><span class="nav-badge" id="badge-my"></span>
       </button>
       <button class="nav-btn" id="nav-beth" onclick="navigate('beth')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="12" y2="13"/><line x1="9" y1="10" x2="15" y2="10"/></svg>
@@ -559,6 +571,10 @@ textarea.form-input{resize:vertical;min-height:72px}
           <button class="cover-tiny-btn" id="cover-retry-btn" onclick="triggerCoverSearch(true)" style="display:none">↺ Try again</button>
           <button class="cover-tiny-btn muted" id="cover-remove-btn" onclick="removeCover()" style="display:none">✕ Remove cover</button>
         </div>
+        <div class="cover-url-row">
+          <input class="cover-url-input" id="cover-url-manual" placeholder="Or paste image URL…" oninput="onManualUrlInput(this.value)">
+          <button class="cover-url-btn" onclick="applyManualUrl()">Use URL</button>
+        </div>
       </div>
     </div>
 
@@ -578,9 +594,24 @@ textarea.form-input{resize:vertical;min-height:72px}
       <textarea class="form-input" id="form-notes" placeholder="Thoughts, rating, review…" maxlength="500"></textarea>
     </div>
     <div class="form-group">
+      <label class="form-label">Date Added <span style="color:var(--text3);font-weight:400;text-transform:none">(optional)</span></label>
+      <input class="form-input" type="date" id="form-date" style="color-scheme:dark">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mark as Read</label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:2px 0">
+        <div style="position:relative;width:44px;height:24px;flex-shrink:0">
+          <input type="checkbox" id="form-read" style="opacity:0;width:0;height:0;position:absolute" onchange="updateReadToggle()">
+          <div id="read-toggle-track" style="position:absolute;inset:0;border-radius:12px;background:var(--border);transition:background .2s;cursor:pointer" onclick="document.getElementById('form-read').click()"></div>
+          <div id="read-toggle-thumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s;pointer-events:none"></div>
+        </div>
+        <span id="read-toggle-label" style="font-size:13px;color:var(--text2)">Not read yet</span>
+      </label>
+    </div>
+    <div class="form-group">
       <label class="form-label">Shelf</label>
       <div class="owner-toggle">
-        <button class="owner-btn active" id="own-me" onclick="selectOwner('me')">📖 My Shelf</button>
+        <button class="owner-btn active" id="own-me" onclick="selectOwner('me')">📖 Connie's</button>
         <button class="owner-btn" id="own-beth" onclick="selectOwner('beth')">📗 Beth's Shelf</button>
       </div>
     </div>
@@ -816,7 +847,7 @@ function renderShelf(who){
   const filtered=[...books.filter(b=>b.owner===owner)].sort((a,b)=>a.title.localeCompare(b.title));
   document.getElementById(who+'-sub').textContent=`${filtered.length} book${filtered.length!==1?'s':''}`;
   const grid=document.getElementById(who+'-grid');
-  grid.innerHTML=filtered.length?filtered.map(bookCardHTML).join(''):`<div class="empty" style="grid-column:1/-1"><span class="empty-icon">${who==='my'?'📚':'📗'}</span><p>${who==='my'?'Nothing on your shelf yet.':'Nothing on Beth\'s shelf yet.'}</p></div>`;
+  grid.innerHTML=filtered.length?filtered.map(bookCardHTML).join(''):`<div class="empty" style="grid-column:1/-1"><span class="empty-icon">${who==='my'?'📚':'📗'}</span><p>${who==='my'?'Nothing on Connie\'s shelf yet.':'Nothing on Beth\'s shelf yet.'}</p></div>`;
   lazyLoadCovers(filtered);
 }
 
@@ -844,7 +875,7 @@ function lazyLoadCovers(list){
 }
 
 function recentItemHTML(b){
-  const col=spineCol(b.title),who=b.owner==='beth'?"Beth's":'Mine';
+  const col=spineCol(b.title),who=b.owner==='beth'?"Beth's":'Connie';
   const coverHtml=b.coverUrl
     ?`<img src="${esc(b.coverUrl)}" alt="" style="width:100%;height:100%;object-fit:cover">`
     :`<div class="recent-spine-strip" style="background:${col}"></div><div id="rv-${b.id}" style="display:none;position:absolute;inset:0"></div>`;
@@ -855,7 +886,7 @@ function recentItemHTML(b){
       <div class="recent-author">${esc(b.author)}</div>
       ${b.notes?`<div class="recent-note">"${esc(b.notes)}"</div>`:''}
     </div>
-    <div class="recent-meta"><div class="recent-who">${who}</div><div class="recent-date">${fmtShort(b.dateAdded)}</div></div>
+    <div class="recent-meta"><div class="recent-who">${who}${b.isRead?' <span class="recent-read-tick">✓</span>':''}</div><div class="recent-date">${fmtShort(b.dateAdded)}</div></div>
     <div class="recent-btns" onclick="event.stopPropagation()">
       <button class="icon-btn" onclick="openEditModal('${b.id}')" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
       <button class="icon-btn del" onclick="openDelModal('${b.id}','${esc(b.title).replace(/'/g,'&#39;')}')" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
@@ -869,7 +900,7 @@ function bookCardHTML(b){
     ?`<img class="book-cover-img" src="${esc(b.coverUrl)}" alt="${esc(b.title)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'book-cover-fallback',innerHTML:'<div class=spine-stripe style=background:${col}></div><div><div class=fallback-title>${esc(b.title)}</div><div class=fallback-author>${esc(b.author)}</div></div>'}))">`
     :`<div class="book-cover-fallback" id="cv-${b.id}"><div class="spine-stripe" style="background:${col}"></div><div><div class="fallback-title">${esc(b.title)}</div><div class="fallback-author">${esc(b.author)}</div></div></div>`;
   return`<div class="book-card" onclick="openDetail('${b.id}')">
-    ${b.owner==='beth'?'<div class="book-owner-dot"></div>':''}
+    ${b.owner==='beth'?'<div class="book-owner-dot"></div>':''}${b.isRead?'<div class="book-read-tick">✓</div>':''}
     <div class="book-cover-wrap">${inner}</div>
     <div class="book-info">
       <div class="book-info-title">${esc(b.title)}</div>
@@ -909,10 +940,14 @@ window.clearSearch=function(){
 window.openDetail=function(id){
   const b=books.find(x=>x.id===id);if(!b)return;
   activeDetailId=id;
-  document.getElementById('detail-shelf-label').textContent=b.owner==='beth'?"Beth's Shelf":'My Shelf';
+  document.getElementById('detail-shelf-label').textContent=b.owner==='beth'?"Beth's Shelf":"Connie's Shelf";
   document.getElementById('detail-title').textContent=b.title;
   document.getElementById('detail-author').textContent=b.author;
   document.getElementById('detail-date').textContent='Added '+fmtDate(b.dateAdded);
+  // Show/hide read badge
+  let readBadgeEl=document.getElementById('detail-read-badge');
+  if(!readBadgeEl){readBadgeEl=document.createElement('div');readBadgeEl.id='detail-read-badge';document.getElementById('detail-date').after(readBadgeEl)}
+  readBadgeEl.innerHTML=b.isRead?'<span class="read-badge">✓ Read</span>':'';
   const notesEl=document.getElementById('detail-notes');
   if(b.notes){notesEl.textContent=`"${b.notes}"`;notesEl.style.display='block'}else notesEl.style.display='none';
   const img=document.getElementById('detail-cover-img');
@@ -928,7 +963,8 @@ window.deleteFromDetail=function(){closeOverlay('detail-overlay');const b=books.
 window.openAddModal=function(){
   document.getElementById('modal-title').textContent='Add a Book';
   document.getElementById('edit-id').value='';
-  ['form-title','form-author','form-notes'].forEach(id=>document.getElementById(id).value='');
+  ['form-title','form-author','form-notes','form-date','cover-url-manual'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('form-read').checked=false;updateReadToggle();
   document.getElementById('form-cover-url').value='';
   document.getElementById('cover-preview-wrap').style.display='none';
   selectOwner(currentPage==='beth'?'beth':'me');
@@ -945,6 +981,12 @@ window.openEditModal=function(id){
   document.getElementById('form-title').value=b.title;
   document.getElementById('form-author').value=b.author;
   document.getElementById('form-notes').value=b.notes||'';
+  // Set date field
+  const bDate=b.dateAdded?.toDate?b.dateAdded.toDate():b.dateAdded?new Date(b.dateAdded):null;
+  document.getElementById('form-date').value=bDate?bDate.toISOString().split('T')[0]:'';
+  // Set read toggle
+  document.getElementById('form-read').checked=!!b.isRead;updateReadToggle();
+  document.getElementById('cover-url-manual').value='';
   document.getElementById('form-cover-url').value=b.coverUrl||'';
   selectOwner(b.owner);
   document.getElementById('form-submit').textContent='Save Changes';
@@ -1029,6 +1071,36 @@ window.triggerCoverSearch=async function(force=false){
   else{document.getElementById('form-cover-url').value='';showCoverPreview(null,'No cover found',false)}
 };
 
+
+window.updateReadToggle=function(){
+  const checked=document.getElementById('form-read').checked;
+  document.getElementById('read-toggle-track').style.background=checked?'var(--ok)':'var(--border)';
+  document.getElementById('read-toggle-thumb').style.transform=checked?'translateX(20px)':'translateX(0)';
+  document.getElementById('read-toggle-label').textContent=checked?'✓ Read':'Not read yet';
+};
+window.onManualUrlInput=function(val){
+  // Live preview as they type a URL
+  if(val.startsWith('http')){
+    const img=document.getElementById('cover-preview-img');
+    img.src=val;img.style.display='block';
+    document.getElementById('cover-preview-box').textContent='';
+  }
+};
+window.applyManualUrl=function(){
+  const val=document.getElementById('cover-url-manual').value.trim();
+  if(!val)return;
+  document.getElementById('form-cover-url').value=val;
+  const img=document.getElementById('cover-preview-img');
+  img.src=val;img.style.display='block';
+  document.getElementById('cover-preview-box').textContent='';
+  document.getElementById('cover-status-text').textContent='✓ Custom cover set';
+  document.getElementById('cover-status-row').className='cover-status-row found';
+  document.getElementById('cover-retry-btn').style.display='none';
+  document.getElementById('cover-remove-btn').style.display='block';
+  showCoverPanel();
+  showToast('Cover updated!','ok');
+};
+
 window.removeCover=function(){
   document.getElementById('form-cover-url').value='';
   document.getElementById('cover-preview-img').style.display='none';
@@ -1046,9 +1118,15 @@ window.submitBook=async function(){
   const editId=document.getElementById('edit-id').value;
   document.getElementById('form-submit').disabled=true;
   document.getElementById('form-submit').textContent='Saving…';
-  const data={title,author,notes,owner:selectedOwner,coverUrl};
-  if(editId){await updateBook(editId,data);showToast('Book updated!','ok')}
-  else{await addBook(data);showToast('Added to shelf! 📚','ok')}
+  const dateVal=document.getElementById('form-date').value;
+  const isRead=document.getElementById('form-read').checked;
+  const data={title,author,notes,owner:selectedOwner,coverUrl,isRead};
+  if(dateVal)data.dateAdded=new Date(dateVal).toISOString();
+  if(editId){
+    // For updates, pass dateAdded if user set it
+    if(dateVal&&db){try{const {Timestamp}=await import('https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js');data.dateAdded=Timestamp.fromDate(new Date(dateVal))}catch{}}
+    await updateBook(editId,data);showToast('Book updated!','ok');
+  }else{await addBook(data);showToast('Added to shelf! 📚','ok')}
   closeOverlay('book-overlay');
 };
 
@@ -1085,7 +1163,7 @@ window.exportCSV=function(){
   const header=['Title','Author','Shelf','Date Added','Notes'];
   const rows=sortByDate(books).map(b=>{
     const d=b.dateAdded?.toDate?b.dateAdded.toDate():new Date(b.dateAdded||0);
-    return[b.title,b.author,b.owner==='me'?'Mine':"Beth's",d.toLocaleDateString('en-GB'),b.notes||'']
+    return[b.title,b.author,b.owner==='me'?'Connie':"Beth's",d.toLocaleDateString('en-GB'),b.notes||'']
       .map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
   });
   const csv=[header.join(','),...rows].join('\n');
@@ -1098,7 +1176,7 @@ window.exportExcel=function(){
   // XML Spreadsheet format — opens natively in Excel
   const rows=[['Title','Author','Shelf','Date Added','Notes'],...sortByDate(books).map(b=>{
     const d=b.dateAdded?.toDate?b.dateAdded.toDate():new Date(b.dateAdded||0);
-    return[b.title||'',b.author||'',b.owner==='me'?'Mine':"Beth's",d.toLocaleDateString('en-GB'),b.notes||''];
+    return[b.title||'',b.author||'',b.owner==='me'?'Connie':"Beth's",d.toLocaleDateString('en-GB'),b.notes||''];
   })];
   const xmlRows=rows.map(row=>`<Row>${row.map(cell=>`<Cell><Data ss:Type="String">${String(cell).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</Data></Cell>`).join('')}</Row>`).join('');
   const xml=`<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Books"><Table>${xmlRows}</Table></Worksheet></Workbook>`;
@@ -1136,7 +1214,7 @@ window.openDupeModal=function(){
     const rows=group.map(b=>`
       <div class="dupe-row">
         <div class="dupe-row-info">
-          <div class="dupe-row-who">${b.owner==='me'?'📖 Your shelf':'📗 Beth\'s shelf'}</div>
+          <div class="dupe-row-who">${b.owner==='me'?'📖 Connie\'s shelf':'📗 Beth\'s shelf'}</div>
           <div class="dupe-row-meta">${esc(b.author)} · Added ${fmtShort(b.dateAdded)}</div>
         </div>
         <button class="dupe-del-btn" onclick="deleteDupe('${b.id}','${esc(title).replace(/'/g,'&#39;')}')">Remove</button>
