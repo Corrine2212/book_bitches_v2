@@ -835,20 +835,26 @@ import {
   getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+/* ════════════════════════════════════════════════════════════
+   ██████████████████████████████████████████████████████████
+   ███  PASTE YOUR FIREBASE CONFIG HERE  ███████████████████
+   ██████████████████████████████████████████████████████████
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA7bBpqj_gMbIi-9SZ19HJ5tYkHNWD-Ims",
-  authDomain: "book-bitches.firebaseapp.com",
-  projectId: "book-bitches",
-  storageBucket: "book-bitches.firebasestorage.app",
-  messagingSenderId: "273694666905",
-  appId: "1:273694666905:web:ab5f560e19f276821b4808",
-  measurementId: "G-PFHR2763XL"
+   1. Go to https://console.firebase.google.com
+   2. Create a project (or use your existing one)
+   3. Add a Web App, copy the firebaseConfig object
+   4. Replace the placeholder below with your real values
+   5. Enable Firestore in the Firebase console (Build → Firestore)
+
+   ════════════════════════════════════════════════════════════ */
+const FIREBASE_CONFIG = {
+  apiKey:            "REPLACE_WITH_YOUR_API_KEY",
+  authDomain:        "REPLACE_WITH_YOUR_AUTH_DOMAIN",
+  projectId:         "REPLACE_WITH_YOUR_PROJECT_ID",
+  storageBucket:     "REPLACE_WITH_YOUR_STORAGE_BUCKET",
+  messagingSenderId: "REPLACE_WITH_YOUR_MESSAGING_SENDER_ID",
+  appId:             "REPLACE_WITH_YOUR_APP_ID"
 };
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 /* ════════════════════════════════════════════════════════════ */
 
 // ── SPINE COLOURS ──────────────────────────────────────────
@@ -890,7 +896,17 @@ function saveLocalSettings() {
 
 // ── FIREBASE INIT ──────────────────────────────────────────
 function initFirebase() {
+  // Safety net: always clear loading screen within 5s no matter what
+  const loadingTimeout = setTimeout(() => {
+    if (document.getElementById('loading-screen')) {
+      console.warn('Firebase timeout — falling back to local storage');
+      document.getElementById('fb-status-label').textContent = '⚠️ Timed out — using local storage';
+      loadLocalFallback();
+    }
+  }, 5000);
+
   if (FIREBASE_CONFIG.apiKey === 'REPLACE_WITH_YOUR_API_KEY') {
+    clearTimeout(loadingTimeout);
     document.getElementById('firebase-banner').classList.add('show');
     document.getElementById('fb-status-label').textContent = '⚠️ Not configured — using local storage';
     loadLocalFallback();
@@ -902,17 +918,20 @@ function initFirebase() {
     document.getElementById('fb-status-label').textContent = 'Connecting…';
 
     unsubscribe = onSnapshot(collection(db, 'books'), snapshot => {
+      clearTimeout(loadingTimeout);
       books = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       fbConnected = true;
       document.getElementById('fb-status-label').textContent = '✅ Connected — syncing live';
       renderAll();
       hideLoading();
     }, err => {
+      clearTimeout(loadingTimeout);
       console.error('Firestore error:', err);
       document.getElementById('fb-status-label').textContent = '❌ Connection error — check config';
       loadLocalFallback();
     });
   } catch(e) {
+    clearTimeout(loadingTimeout);
     console.error('Firebase init error:', e);
     loadLocalFallback();
   }
@@ -956,8 +975,11 @@ async function deleteBook(id) {
 }
 
 // ── BOOK COVER APIS ────────────────────────────────────────
-// 1. Google Books (no key needed for basic searches)
+// 1. Google Books (free, no key)
 // 2. Open Library (free, no key)
+// 3. Hardcover — called via secure Netlify Function proxy (/api/cover)
+//    The API token lives only in Netlify's environment variables, never here.
+
 const coverCache = {};
 
 async function fetchCover(title, author) {
@@ -967,14 +989,13 @@ async function fetchCover(title, author) {
   // 1) Google Books
   try {
     const q = encodeURIComponent(`intitle:${title}+inauthor:${author}`);
-    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=5&fields=items(volumeInfo(imageLinks,industryIdentifiers))`);
+    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=5&fields=items(volumeInfo(imageLinks))`);
     if (res.ok) {
       const data = await res.json();
       if (data.items) {
         for (const item of data.items) {
           const img = item.volumeInfo?.imageLinks;
           if (img) {
-            // Prefer larger covers, upgrade to higher-res
             const url = (img.extraLarge || img.large || img.medium || img.thumbnail || img.smallThumbnail)
               .replace('http://', 'https://')
               .replace('zoom=1', 'zoom=3')
@@ -1002,7 +1023,6 @@ async function fetchCover(title, author) {
           }
           if (doc.isbn?.[0]) {
             const url = `https://covers.openlibrary.org/b/isbn/${doc.isbn[0]}-L.jpg`;
-            // Check if the image actually exists (Open Library returns a 1px placeholder)
             const probe = await fetch(url, { method:'HEAD' }).catch(() => null);
             if (probe?.headers?.get('content-length') > 1000) {
               coverCache[key] = url;
@@ -1010,6 +1030,20 @@ async function fetchCover(title, author) {
             }
           }
         }
+      }
+    }
+  } catch(e) {}
+
+  // 3) Hardcover — via secure Netlify Function proxy (key never exposed to browser)
+  try {
+    const res = await fetch(
+      `/.netlify/functions/cover?title=${encodeURIComponent(title)}&author=${encodeURIComponent(author)}`
+    );
+    if (res.ok) {
+      const data = await res.json();
+      if (data.url) {
+        coverCache[key] = data.url;
+        return data.url;
       }
     }
   } catch(e) {}
@@ -1502,11 +1536,10 @@ if ('serviceWorker' in navigator) {
 
 // ── HIDE LOADING ───────────────────────────────────────────
 function hideLoading() {
-  setTimeout(() => {
-    const ls = document.getElementById('loading-screen');
-    ls.classList.add('gone');
-    setTimeout(() => ls.remove(), 400);
-  }, 300);
+  const ls = document.getElementById('loading-screen');
+  if (!ls) return; // already gone
+  ls.classList.add('gone');
+  setTimeout(() => { if (ls.parentNode) ls.remove(); }, 400);
 }
 
 // ── BOOT ───────────────────────────────────────────────────
