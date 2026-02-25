@@ -1,0 +1,26 @@
+{
+  "name": "Book Bitches",
+  "short_name": "Book Bitches",
+  "description": "Our shared bookshelf — see what we own so we don't buy the same books twice",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#14110f",
+  "theme_color": "#c17f42",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["books", "lifestyle"],
+  "lang": "en-GB"
+}

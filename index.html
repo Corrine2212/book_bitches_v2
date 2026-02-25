@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Book Bitches">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#c17f42">
+<title>Book Bitches 📚</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.35s, color 0.35s;
+  overscroll-behavior: none;
+}
+
+/* ══════════════════════════════════════
+   THEME VARIABLES
+══════════════════════════════════════ */
+:root {
+  --bg:        #14110f;
+  --bg2:       #1c1814;
+  --card:      #221e1a;
+  --card2:     #2a2420;
+  --border:    #332e28;
+  --text:      #f0e8df;
+  --text2:     #b8a898;
+  --text3:     #7a6a5a;
+  --accent:    #c17f42;
+  --accent-d:  rgba(193,127,66,0.15);
+  --accent-g:  rgba(193,127,66,0.35);
+  --nav:       #1a1510;
+  --input:     #2a2420;
+  --shadow:    rgba(0,0,0,0.55);
+  --del:       #e05c5c;
+  --success:   #5aad6e;
+}
+body.light {
+  --bg:        #faf6f1;
+  --bg2:       #f2ebe0;
+  --card:      #ffffff;
+  --card2:     #f7f1eb;
+  --border:    #e4d8cc;
+  --text:      #2a1f14;
+  --text2:     #6b5540;
+  --text3:     #9a8878;
+  --accent:    #b5702e;
+  --accent-d:  rgba(181,112,46,0.1);
+  --accent-g:  rgba(181,112,46,0.3);
+  --nav:       #f2ebe0;
+  --input:     #ede4d9;
+  --shadow:    rgba(0,0,0,0.1);
+}
+body.purple {
+  --bg:        #0f0c17;
+  --bg2:       #160f22;
+  --card:      #1e1530;
+  --card2:     #261b3a;
+  --border:    #362545;
+  --text:      #ede8f5;
+  --text2:     #b0a0cc;
+  --text3:     #7060a0;
+  --accent:    #a07de0;
+  --accent-d:  rgba(160,125,224,0.15);
+  --accent-g:  rgba(160,125,224,0.35);
+  --nav:       #130d1f;
+  --input:     #251a38;
+  --shadow:    rgba(0,0,0,0.55);
+}
+body.green {
+  --bg:        #0c1410;
+  --bg2:       #111c15;
+  --card:      #17231b;
+  --card2:     #1e2e22;
+  --border:    #2a3d2e;
+  --text:      #e4f0e8;
+  --text2:     #90b898;
+  --text3:     #507858;
+  --accent:    #5aad6e;
+  --accent-d:  rgba(90,173,110,0.15);
+  --accent-g:  rgba(90,173,110,0.35);
+  --nav:       #0e1a12;
+  --input:     #1c2e20;
+  --shadow:    rgba(0,0,0,0.55);
+}
+
+/* ══════════════════════════════════════
+   LAYOUT SHELL
+══════════════════════════════════════ */
+#app { max-width: 700px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+.header {
+  padding: 18px 18px 0;
+  background: var(--bg);
+  position: sticky; top: 0; z-index: 40;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.35s;
+}
+.header.scrolled { border-color: var(--border); box-shadow: 0 4px 24px var(--shadow); }
+.logo-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(22px, 5.5vw, 32px);
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.logo em { color: var(--accent); font-style: normal; }
+.stats-pill {
+  font-size: 11px; color: var(--text3);
+  background: var(--card); border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+.search-wrap { padding: 10px 0 12px; position: relative; }
+.search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text3); pointer-events: none; }
+.search-input {
+  width: 100%; background: var(--input); border: 1.5px solid var(--border);
+  border-radius: 24px; padding: 10px 40px 10px 38px;
+  color: var(--text); font-family: inherit; font-size: 14px;
+  outline: none; transition: border-color 0.2s; caret-color: var(--accent);
+}
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--text3); }
+.search-clear {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: var(--card2); border: none; color: var(--text3); cursor: pointer;
+  width: 24px; height: 24px; border-radius: 50%; display: none;
+  align-items: center; justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+.search-clear.visible { display: flex; }
+.search-clear:hover { color: var(--text); background: var(--border); }
+
+/* ══════════════════════════════════════
+   BOTTOM NAV
+══════════════════════════════════════ */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 700px; background: var(--nav);
+  border-top: 1px solid var(--border); display: flex; z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom);
+  transition: background 0.35s;
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 0 10px; background: none; border: none; cursor: pointer;
+  color: var(--text3); transition: color 0.2s; font-family: inherit; position: relative;
+}
+.nav-btn.active { color: var(--accent); }
+.nav-btn svg { width: 21px; height: 21px; transition: transform 0.2s; }
+.nav-btn.active svg { transform: scale(1.1); }
+.nav-btn span { font-size: 10px; font-weight: 600; letter-spacing: 0.04em; }
+.nav-badge {
+  position: absolute; top: 6px; right: calc(50% - 18px);
+  background: var(--accent); color: #fff;
+  font-size: 9px; font-weight: 700; min-width: 16px; height: 16px;
+  border-radius: 8px; display: none; align-items: center; justify-content: center;
+  padding: 0 4px;
+}
+.nav-badge.show { display: flex; }
+
+/* ══════════════════════════════════════
+   CONTENT & PAGES
+══════════════════════════════════════ */
+.content { flex: 1; padding: 16px 16px calc(72px + env(safe-area-inset-bottom)); }
+.page { display: none; }
+.page.active { display: block; animation: fadeUp 0.22s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* ══════════════════════════════════════
+   SECTION HEADINGS
+══════════════════════════════════════ */
+.section-head { margin-bottom: 14px; }
+.section-title { font-family: 'Playfair Display', serif; font-size: clamp(18px,4vw,24px); color: var(--text); }
+.section-sub { font-size: 12px; color: var(--text3); margin-top: 3px; }
+
+/* ══════════════════════════════════════
+   BOOK GRID (cards with covers)
+══════════════════════════════════════ */
+.books-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (min-width: 500px) { .books-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 640px) { .books-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; } }
+
+.book-card {
+  background: var(--card); border-radius: 10px; border: 1px solid var(--border);
+  overflow: hidden; cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+  position: relative;
+}
+.book-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px var(--shadow); border-color: var(--accent); }
+.book-card:active { transform: scale(0.97); }
+
+.book-cover-wrap {
+  width: 100%; aspect-ratio: 2/3;
+  background: var(--card2); position: relative; overflow: hidden;
+}
+.book-cover-img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: opacity 0.3s;
+}
+.book-cover-fallback {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 8px; text-align: center;
+  position: relative;
+}
+.spine-stripe {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 10px;
+}
+.fallback-title {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: clamp(9px, 2.2vw, 12px); color: var(--text); line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+  padding-left: 12px; word-break: break-word;
+}
+.fallback-author {
+  font-size: clamp(8px, 1.8vw, 10px); color: var(--text3); margin-top: 4px;
+  font-style: italic; padding-left: 12px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.cover-loading {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: var(--card2);
+}
+.spinner {
+  width: 20px; height: 20px; border: 2px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.book-info { padding: 8px 9px 10px; }
+.book-info-title {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  font-size: 12px; color: var(--text); line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.book-info-author { font-size: 10px; color: var(--accent); margin-top: 2px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.book-info-date { font-size: 9px; color: var(--text3); margin-top: 3px; }
+.book-owner-dot {
+  position: absolute; top: 7px; right: 7px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); opacity: 0.9;
+  border: 1.5px solid var(--bg);
+}
+
+/* ══════════════════════════════════════
+   RECENT LIST (home page)
+══════════════════════════════════════ */
+.recent-list { display: flex; flex-direction: column; gap: 8px; }
+.recent-item {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 10px 12px; display: flex; align-items: center; gap: 10px;
+  transition: transform 0.15s, border-color 0.15s; cursor: pointer;
+}
+.recent-item:hover { transform: translateX(4px); border-color: var(--accent); }
+.recent-cover {
+  width: 42px; height: 60px; border-radius: 5px; object-fit: cover;
+  background: var(--card2); flex-shrink: 0; overflow: hidden;
+  position: relative;
+}
+.recent-cover img { width: 100%; height: 100%; object-fit: cover; }
+.recent-cover-fallback {
+  width: 100%; height: 100%; display: flex; align-items: flex-end;
+  font-family: 'Playfair Display', serif; font-size: 8px; color: var(--text2);
+  padding: 4px; line-height: 1.2;
+  word-break: break-word;
+}
+.recent-spine-strip {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: 4px 0 0 4px;
+}
+.recent-info { flex: 1; min-width: 0; }
+.recent-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 14px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.recent-author { font-size: 12px; color: var(--text2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.recent-note { font-size: 11px; color: var(--text3); font-style: italic; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.recent-meta { text-align: right; flex-shrink: 0; }
+.recent-who { font-size: 11px; color: var(--accent); font-weight: 600; }
+.recent-date { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.recent-btns { display: flex; gap: 2px; }
+.icon-btn {
+  background: none; border: none; color: var(--text3); cursor: pointer;
+  padding: 6px; border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+  display: flex; align-items: center;
+}
+.icon-btn:hover { background: var(--card2); color: var(--text); }
+.icon-btn.del:hover { color: var(--del); background: rgba(224,92,92,0.08); }
+.icon-btn svg { width: 15px; height: 15px; }
+
+/* ══════════════════════════════════════
+   FAB
+══════════════════════════════════════ */
+.fab {
+  position: fixed;
+  bottom: calc(72px + env(safe-area-inset-bottom) + 12px);
+  right: max(16px, calc(50% - 334px));
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--accent); border: none; color: #fff; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 22px var(--accent-g); z-index: 45;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.fab:hover { transform: scale(1.1); box-shadow: 0 6px 30px var(--accent-g); }
+.fab:active { transform: scale(0.94); }
+.fab svg { width: 24px; height: 24px; }
+
+/* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 100; padding: 0;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg); border-radius: 22px 22px 0 0;
+  padding: 6px 20px max(24px, env(safe-area-inset-bottom));
+  width: 100%; max-width: 700px; max-height: 94vh; overflow-y: auto;
+  transform: translateY(50px); border: 1px solid var(--border); border-bottom: none;
+  transition: transform 0.3s cubic-bezier(0.34,1.2,0.64,1);
+}
+@media (min-width: 600px) {
+  .overlay { align-items: center; padding: 20px; }
+  .modal { border-radius: 20px; border-bottom: 1px solid var(--border); max-height: 88vh; }
+}
+.overlay.open .modal { transform: translateY(0); }
+.modal-handle { width: 38px; height: 4px; background: var(--border); border-radius: 2px; margin: 10px auto 18px; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text); }
+
+/* ══════════════════════════════════════
+   FORM
+══════════════════════════════════════ */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px; display: block; font-weight: 600; }
+.form-input {
+  width: 100%; background: var(--input); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 11px 13px;
+  color: var(--text); font-family: inherit; font-size: 14px; outline: none;
+  transition: border-color 0.2s; caret-color: var(--accent);
+}
+.form-input:focus { border-color: var(--accent); }
+.form-input::placeholder { color: var(--text3); }
+textarea.form-input { resize: vertical; min-height: 72px; }
+
+.owner-toggle { display: flex; gap: 8px; }
+.owner-btn {
+  flex: 1; padding: 10px; border-radius: 10px;
+  border: 1.5px solid var(--border); background: transparent;
+  color: var(--text3); font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.18s;
+}
+.owner-btn.active { border-color: var(--accent); background: var(--accent-d); color: var(--accent); }
+
+/* Cover preview in form */
+.cover-preview-wrap {
+  display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px;
+}
+.cover-preview {
+  width: 60px; height: 88px; border-radius: 6px; background: var(--card2);
+  border: 1px solid var(--border); overflow: hidden; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; position: relative;
+}
+.cover-preview img { width: 100%; height: 100%; object-fit: cover; }
+.cover-preview-info { flex: 1; min-width: 0; }
+.cover-status { font-size: 12px; color: var(--text3); margin-top: 4px; }
+.cover-status.found { color: var(--success); }
+.cover-status.searching { color: var(--accent); }
+
+.submit-btn {
+  width: 100%; padding: 14px; border-radius: 10px; background: var(--accent);
+  border: none; color: #fff; font-family: inherit; font-size: 15px; font-weight: 600;
+  cursor: pointer; margin-top: 6px; transition: opacity 0.15s, transform 0.1s;
+}
+.submit-btn:hover { opacity: 0.88; }
+.submit-btn:active { transform: scale(0.98); }
+.submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ══════════════════════════════════════
+   BOOK DETAIL MODAL
+══════════════════════════════════════ */
+.detail-cover-wrap {
+  width: 120px; height: 180px; border-radius: 10px; overflow: hidden;
+  background: var(--card2); flex-shrink: 0; border: 1px solid var(--border);
+}
+.detail-cover-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.detail-hero { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px; }
+.detail-info { flex: 1; min-width: 0; padding-top: 4px; }
+.detail-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; color: var(--text); line-height: 1.3; margin-bottom: 6px; }
+.detail-author { font-size: 14px; color: var(--accent); font-style: italic; margin-bottom: 8px; }
+.detail-meta { font-size: 12px; color: var(--text3); margin-bottom: 4px; }
+.detail-notes { font-size: 13px; color: var(--text2); font-style: italic; line-height: 1.6; padding: 12px; background: var(--card2); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 16px; }
+.detail-actions { display: flex; gap: 10px; }
+.detail-btn {
+  flex: 1; padding: 11px; border-radius: 10px; border: 1.5px solid var(--border);
+  background: transparent; color: var(--text); font-family: inherit; font-size: 14px;
+  cursor: pointer; transition: background 0.15s, border-color 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.detail-btn:hover { background: var(--card2); border-color: var(--accent); }
+.detail-btn.danger:hover { border-color: var(--del); color: var(--del); background: rgba(224,92,92,0.08); }
+.detail-btn svg { width: 16px; height: 16px; }
+
+/* ══════════════════════════════════════
+   DELETE CONFIRM
+══════════════════════════════════════ */
+.confirm-modal {
+  background: var(--bg); border-radius: 16px; padding: 26px;
+  max-width: 340px; width: calc(100% - 32px); text-align: center;
+  border: 1px solid var(--border);
+  transform: scale(0.88); transition: transform 0.22s cubic-bezier(0.34,1.4,0.64,1);
+}
+.overlay.open .confirm-modal { transform: scale(1); }
+.confirm-icon { font-size: 40px; margin-bottom: 12px; }
+.confirm-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); margin-bottom: 6px; }
+.confirm-sub { font-size: 13px; color: var(--text3); margin-bottom: 22px; line-height: 1.5; }
+.confirm-btns { display: flex; gap: 10px; }
+.confirm-btn {
+  flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border);
+  background: transparent; color: var(--text); font-family: inherit; font-size: 14px;
+  cursor: pointer; transition: background 0.15s;
+}
+.confirm-btn:hover { background: var(--card2); }
+.confirm-btn.danger { background: var(--del); border-color: var(--del); color: #fff; font-weight: 600; }
+.confirm-btn.danger:hover { opacity: 0.88; }
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+.toast {
+  position: fixed; top: 18px; left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: var(--card); color: var(--text); border: 1px solid var(--border);
+  padding: 10px 18px; border-radius: 24px;
+  font-size: 13px; font-weight: 500; z-index: 200;
+  box-shadow: 0 6px 24px var(--shadow); white-space: nowrap;
+  display: flex; align-items: center; gap: 8px;
+  transition: transform 0.32s cubic-bezier(0.34,1.4,0.64,1);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.toast-dot.del { background: var(--del); }
+.toast-dot.ok { background: var(--success); }
+
+/* ══════════════════════════════════════
+   SETTINGS
+══════════════════════════════════════ */
+.settings-card {
+  background: var(--card); border-radius: 14px; border: 1px solid var(--border);
+  overflow: hidden; margin-bottom: 14px;
+}
+.settings-row {
+  padding: 15px 16px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row.col { flex-direction: column; align-items: flex-start; }
+.settings-label { font-size: 14px; color: var(--text); font-weight: 500; }
+.settings-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+.theme-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; width: 100%; margin-top: 10px; }
+.theme-swatch {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  cursor: pointer; padding: 8px 4px; border-radius: 10px;
+  border: 1.5px solid var(--border); transition: all 0.15s; background: var(--card2);
+}
+.theme-swatch:hover, .theme-swatch.active { border-color: var(--accent); background: var(--accent-d); }
+.swatch-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.08); }
+.swatch-label { font-size: 11px; color: var(--text2); font-weight: 500; }
+
+.count-btns { display: flex; gap: 6px; }
+.count-btn {
+  padding: 7px 16px; border-radius: 8px; border: 1.5px solid var(--border);
+  background: transparent; color: var(--text3); font-family: inherit;
+  font-size: 14px; cursor: pointer; transition: all 0.15s;
+}
+.count-btn.active { border-color: var(--accent); background: var(--accent-d); color: var(--accent); font-weight: 600; }
+
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 10px; }
+.stat-tile { background: var(--card2); border-radius: 10px; padding: 14px; }
+.stat-num { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--accent); font-weight: 700; }
+.stat-label { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+/* ══════════════════════════════════════
+   FIREBASE STATUS BANNER
+══════════════════════════════════════ */
+.firebase-banner {
+  background: rgba(224,92,92,0.12); border: 1px solid rgba(224,92,92,0.3);
+  border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;
+  font-size: 13px; color: var(--del); display: none; line-height: 1.5;
+}
+.firebase-banner.show { display: block; }
+.firebase-banner strong { display: block; margin-bottom: 2px; }
+
+/* ══════════════════════════════════════
+   EMPTY STATE
+══════════════════════════════════════ */
+.empty { text-align: center; padding: 52px 20px; color: var(--text3); }
+.empty-icon { font-size: 52px; margin-bottom: 14px; display: block; }
+.empty p { font-style: italic; font-size: 14px; line-height: 1.7; color: var(--text2); }
+
+/* ══════════════════════════════════════
+   LOADING OVERLAY
+══════════════════════════════════════ */
+#loading-screen {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 999; transition: opacity 0.4s;
+}
+#loading-screen.gone { opacity: 0; pointer-events: none; }
+.loading-logo { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--text); margin-bottom: 6px; }
+.loading-logo em { color: var(--accent); font-style: normal; }
+.loading-spinner { width: 28px; height: 28px; border: 2.5px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-top: 20px; }
+
+/* ══════════════════════════════════════
+   SCROLLBAR
+══════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ══════════════════════════════════════
+   DESKTOP
+══════════════════════════════════════ */
+@media (min-width: 600px) {
+  .content { padding: 20px 22px calc(80px + env(safe-area-inset-bottom)); }
+}
+@media (min-width: 700px) {
+  .fab { right: calc(50% - 334px + 16px); }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loading-screen">
+  <div class="loading-logo">📚 Book <em>Bitches</em></div>
+  <div class="loading-spinner"></div>
+</div>
+
+<div id="app">
+
+  <!-- ─── HEADER ─────────────────────── -->
+  <div class="header" id="header">
+    <div class="logo-row">
+      <div class="logo">📚 Book <em>Bitches</em></div>
+      <div class="stats-pill" id="stats-pill">loading…</div>
+    </div>
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="search-input" placeholder="Search books or authors…" oninput="handleSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── CONTENT ───────────────────── -->
+  <div class="content">
+
+    <!-- Firebase not configured warning -->
+    <div class="firebase-banner" id="firebase-banner">
+      <strong>⚠️ Firebase not configured</strong>
+      Open index.html and paste your Firebase config into the <code>FIREBASE_CONFIG</code> section near the top of the &lt;script&gt;. Data is saving locally for now.
+    </div>
+
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
+      <div class="section-head">
+        <div class="section-title">Recently Added</div>
+        <div class="section-sub" id="recent-sub">Last 5 books</div>
+      </div>
+      <div id="recent-list" class="recent-list"></div>
+    </div>
+
+    <!-- MY SHELF -->
+    <div class="page" id="page-my">
+      <div class="section-head">
+        <div class="section-title">My Shelf</div>
+        <div class="section-sub" id="my-sub">0 books</div>
+      </div>
+      <div id="my-grid" class="books-grid"></div>
+    </div>
+
+    <!-- BETH'S SHELF -->
+    <div class="page" id="page-beth">
+      <div class="section-head">
+        <div class="section-title">Beth's Shelf</div>
+        <div class="section-sub" id="beth-sub">0 books</div>
+      </div>
+      <div id="beth-grid" class="books-grid"></div>
+    </div>
+
+    <!-- SEARCH RESULTS -->
+    <div class="page" id="page-search">
+      <div class="section-head">
+        <div class="section-title">Search</div>
+        <div class="section-sub" id="search-sub">0 results</div>
+      </div>
+      <div id="search-results" class="recent-list"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="section-head" style="margin-bottom:16px">
+        <div class="section-title">Settings</div>
+      </div>
+
+      <div class="settings-card">
+        <div class="settings-row col">
+          <div><div class="settings-label">Theme</div><div class="settings-sub">Pick your vibe</div></div>
+          <div class="theme-grid">
+            <div class="theme-swatch" id="sw-dark" onclick="setTheme('dark')">
+              <div class="swatch-dot" style="background:linear-gradient(135deg,#14110f 50%,#c17f42 50%)"></div>
+              <span class="swatch-label">Dark</span>
+            </div>
+            <div class="theme-swatch" id="sw-light" onclick="setTheme('light')">
+              <div class="swatch-dot" style="background:linear-gradient(135deg,#faf6f1 50%,#b5702e 50%)"></div>
+              <span class="swatch-label">Light</span>
+            </div>
+            <div class="theme-swatch" id="sw-purple" onclick="setTheme('purple')">
+              <div class="swatch-dot" style="background:linear-gradient(135deg,#0f0c17 50%,#a07de0 50%)"></div>
+              <span class="swatch-label">Purple</span>
+            </div>
+            <div class="theme-swatch" id="sw-green" onclick="setTheme('green')">
+              <div class="swatch-dot" style="background:linear-gradient(135deg,#0c1410 50%,#5aad6e 50%)"></div>
+              <span class="swatch-label">Green</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="settings-row">
+          <div><div class="settings-label">Recent books on Home</div><div class="settings-sub">How many to show</div></div>
+          <div class="count-btns">
+            <button class="count-btn" id="cnt-3" onclick="setRecentCount(3)">3</button>
+            <button class="count-btn active" id="cnt-5" onclick="setRecentCount(5)">5</button>
+            <button class="count-btn" id="cnt-10" onclick="setRecentCount(10)">10</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="settings-row col">
+          <div><div class="settings-label">Library Stats</div></div>
+          <div class="stats-grid">
+            <div class="stat-tile"><div class="stat-num" id="st-total">0</div><div class="stat-label">Total Books</div></div>
+            <div class="stat-tile"><div class="stat-num" id="st-mine">0</div><div class="stat-label">My Books</div></div>
+            <div class="stat-tile"><div class="stat-num" id="st-beth">0</div><div class="stat-label">Beth's Books</div></div>
+            <div class="stat-tile"><div class="stat-num" id="st-last" style="font-size:15px;padding-top:4px">—</div><div class="stat-label">Last Added</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="settings-row">
+          <div><div class="settings-label">Install App</div><div class="settings-sub">Add to your home screen</div></div>
+          <button class="count-btn" id="install-btn" onclick="promptInstall()" style="display:none">Install</button>
+          <span id="install-note" class="settings-sub" style="color:var(--success)"></span>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-label">Firebase Status</div><div class="settings-sub" id="fb-status-label">Checking…</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ─── BOTTOM NAV ────────────────── -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-home" onclick="navigate('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-btn" id="nav-my" onclick="navigate('my')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>My Shelf</span>
+      <span class="nav-badge" id="badge-my"></span>
+    </button>
+    <button class="nav-btn" id="nav-beth" onclick="navigate('beth')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="12" y2="13"/><line x1="9" y1="10" x2="15" y2="10"/></svg>
+      <span>Beth's</span>
+      <span class="nav-badge" id="badge-beth"></span>
+    </button>
+    <button class="nav-btn" id="nav-settings" onclick="navigate('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+  <!-- FAB -->
+  <button class="fab" id="fab" onclick="openAddModal()" title="Add a book">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+
+</div><!-- /app -->
+
+<!-- ── ADD / EDIT MODAL ─────────────────────────────────────── -->
+<div class="overlay" id="book-overlay" onclick="overlayClick(event,'book-overlay')">
+  <div class="modal" id="book-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Add a Book</div>
+      <button class="icon-btn" onclick="closeOverlay('book-overlay')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Cover preview -->
+    <div class="cover-preview-wrap" id="cover-preview-wrap" style="display:none">
+      <div class="cover-preview" id="cover-preview-box">
+        <div class="spinner" id="cover-spinner"></div>
+        <img id="cover-preview-img" style="display:none" alt="Book cover">
+      </div>
+      <div class="cover-preview-info">
+        <div style="font-size:13px;color:var(--text2)" id="cover-preview-title-label"></div>
+        <div class="cover-status" id="cover-status">Searching for cover…</div>
+        <button onclick="clearCoverOverride()" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;margin-top:4px;padding:0" id="cover-override-btn" style="display:none">Use no cover</button>
+      </div>
+    </div>
+
+    <input type="hidden" id="edit-id">
+    <input type="hidden" id="form-cover-url">
+
+    <div class="form-group">
+      <label class="form-label">Title *</label>
+      <input class="form-input" id="form-title" placeholder="Book title…" maxlength="120" oninput="onTitleInput()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Author *</label>
+      <input class="form-input" id="form-author" placeholder="Author name…" maxlength="100" oninput="onAuthorInput()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes <span style="color:var(--text3);font-weight:400;text-transform:none">(optional)</span></label>
+      <textarea class="form-input" id="form-notes" placeholder="Thoughts, rating, review…" maxlength="500"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Shelf</label>
+      <div class="owner-toggle">
+        <button class="owner-btn active" id="own-me" onclick="selectOwner('me')">📖 My Shelf</button>
+        <button class="owner-btn" id="own-beth" onclick="selectOwner('beth')">📗 Beth's Shelf</button>
+      </div>
+    </div>
+    <button class="submit-btn" id="form-submit" onclick="submitBook()" disabled>Add to Shelf</button>
+  </div>
+</div>
+
+<!-- ── BOOK DETAIL MODAL ───────────────────────────────────── -->
+<div class="overlay" id="detail-overlay" onclick="overlayClick(event,'detail-overlay')">
+  <div class="modal" id="detail-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="detail-shelf-label"></div>
+      <button class="icon-btn" onclick="closeOverlay('detail-overlay')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="detail-hero">
+      <div class="detail-cover-wrap" id="detail-cover-wrap">
+        <img id="detail-cover-img" alt="Book cover" style="display:none">
+        <div id="detail-cover-fallback" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:12px;text-align:center">
+          <span style="font-family:'Playfair Display',serif;font-size:14px;color:var(--text2)"></span>
+        </div>
+      </div>
+      <div class="detail-info">
+        <div class="detail-title" id="detail-title"></div>
+        <div class="detail-author" id="detail-author"></div>
+        <div class="detail-meta" id="detail-date"></div>
+        <div class="detail-meta" id="detail-isbn" style="margin-top:2px"></div>
+      </div>
+    </div>
+    <div class="detail-notes" id="detail-notes" style="display:none"></div>
+    <div class="detail-actions">
+      <button class="detail-btn" onclick="editFromDetail()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Edit
+      </button>
+      <button class="detail-btn danger" onclick="deleteFromDetail()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        Remove
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── DELETE CONFIRM ──────────────────────────────────────── -->
+<div class="overlay" id="del-overlay" onclick="overlayClick(event,'del-overlay')" style="align-items:center">
+  <div class="confirm-modal">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title" id="del-title">Remove this book?</div>
+    <div class="confirm-sub" id="del-sub">This can't be undone.</div>
+    <input type="hidden" id="del-id">
+    <div class="confirm-btns">
+      <button class="confirm-btn" onclick="closeOverlay('del-overlay')">Cancel</button>
+      <button class="confirm-btn danger" onclick="confirmDelete()">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ───────────────────────────────────────────────── -->
+<div class="toast" id="toast">
+  <div class="toast-dot" id="toast-dot"></div>
+  <span id="toast-text">Done!</span>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     FIREBASE & APP SCRIPT
+════════════════════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import {
+  getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA7bBpqj_gMbIi-9SZ19HJ5tYkHNWD-Ims",
+  authDomain: "book-bitches.firebaseapp.com",
+  projectId: "book-bitches",
+  storageBucket: "book-bitches.firebasestorage.app",
+  messagingSenderId: "273694666905",
+  appId: "1:273694666905:web:ab5f560e19f276821b4808",
+  measurementId: "G-PFHR2763XL"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+/* ════════════════════════════════════════════════════════════ */
+
+// ── SPINE COLOURS ──────────────────────────────────────────
+const SPINES = [
+  '#E8A598','#A8C5A0','#9DB4C0','#D4A5C9','#F2CC8F',
+  '#B5C4B1','#C9B8A8','#8FC1D4','#D4B5C8','#BFCBA8',
+  '#F0B8A8','#A8B8D4','#CBAACB','#AAC4C4','#D4C4A0',
+];
+function spineCol(title) {
+  let h = 0;
+  for (let i = 0; i < title.length; i++) h = (h * 31 + title.charCodeAt(i)) & 0xffff;
+  return SPINES[h % SPINES.length];
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── STATE ──────────────────────────────────────────────────
+let books = [];
+let settings = { theme:'dark', recentCount:5 };
+let currentPage = 'home';
+let selectedOwner = 'me';
+let searchQuery = '';
+let activeDetailId = null;
+let coverSearchTimer = null;
+let deferredInstall = null;
+let fbConnected = false;
+let db = null;
+let unsubscribe = null;
+
+// ── SETTINGS (localStorage) ────────────────────────────────
+function loadLocalSettings() {
+  try { return Object.assign({ theme:'dark', recentCount:5 }, JSON.parse(localStorage.getItem('bb3:settings'))); }
+  catch { return { theme:'dark', recentCount:5 }; }
+}
+function saveLocalSettings() {
+  try { localStorage.setItem('bb3:settings', JSON.stringify(settings)); } catch {}
+}
+
+// ── FIREBASE INIT ──────────────────────────────────────────
+function initFirebase() {
+  if (FIREBASE_CONFIG.apiKey === 'REPLACE_WITH_YOUR_API_KEY') {
+    document.getElementById('firebase-banner').classList.add('show');
+    document.getElementById('fb-status-label').textContent = '⚠️ Not configured — using local storage';
+    loadLocalFallback();
+    return;
+  }
+  try {
+    const app = initializeApp(FIREBASE_CONFIG);
+    db = getFirestore(app);
+    document.getElementById('fb-status-label').textContent = 'Connecting…';
+
+    unsubscribe = onSnapshot(collection(db, 'books'), snapshot => {
+      books = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      fbConnected = true;
+      document.getElementById('fb-status-label').textContent = '✅ Connected — syncing live';
+      renderAll();
+      hideLoading();
+    }, err => {
+      console.error('Firestore error:', err);
+      document.getElementById('fb-status-label').textContent = '❌ Connection error — check config';
+      loadLocalFallback();
+    });
+  } catch(e) {
+    console.error('Firebase init error:', e);
+    loadLocalFallback();
+  }
+}
+
+function loadLocalFallback() {
+  try { books = JSON.parse(localStorage.getItem('bb3:books')) || []; } catch { books = []; }
+  renderAll();
+  hideLoading();
+}
+function saveLocalFallback() {
+  try { localStorage.setItem('bb3:books', JSON.stringify(books)); } catch {}
+}
+
+async function addBook(data) {
+  if (db) {
+    try { await addDoc(collection(db, 'books'), { ...data, dateAdded: serverTimestamp() }); return; }
+    catch(e) { console.error(e); }
+  }
+  books.push({ ...data, id: Date.now().toString(), dateAdded: new Date().toISOString() });
+  saveLocalFallback();
+  renderAll();
+}
+async function updateBook(id, data) {
+  if (db) {
+    try { await updateDoc(doc(db, 'books', id), data); return; }
+    catch(e) { console.error(e); }
+  }
+  books = books.map(b => b.id === id ? { ...b, ...data } : b);
+  saveLocalFallback();
+  renderAll();
+}
+async function deleteBook(id) {
+  if (db) {
+    try { await deleteDoc(doc(db, 'books', id)); return; }
+    catch(e) { console.error(e); }
+  }
+  books = books.filter(b => b.id !== id);
+  saveLocalFallback();
+  renderAll();
+}
+
+// ── BOOK COVER APIS ────────────────────────────────────────
+// 1. Google Books (no key needed for basic searches)
+// 2. Open Library (free, no key)
+const coverCache = {};
+
+async function fetchCover(title, author) {
+  const key = `${title}|${author}`.toLowerCase();
+  if (coverCache[key] !== undefined) return coverCache[key];
+
+  // 1) Google Books
+  try {
+    const q = encodeURIComponent(`intitle:${title}+inauthor:${author}`);
+    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=5&fields=items(volumeInfo(imageLinks,industryIdentifiers))`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.items) {
+        for (const item of data.items) {
+          const img = item.volumeInfo?.imageLinks;
+          if (img) {
+            // Prefer larger covers, upgrade to higher-res
+            const url = (img.extraLarge || img.large || img.medium || img.thumbnail || img.smallThumbnail)
+              .replace('http://', 'https://')
+              .replace('zoom=1', 'zoom=3')
+              .replace('&edge=curl', '');
+            coverCache[key] = url;
+            return url;
+          }
+        }
+      }
+    }
+  } catch(e) {}
+
+  // 2) Open Library
+  try {
+    const q = encodeURIComponent(`${title} ${author}`);
+    const res = await fetch(`https://openlibrary.org/search.json?q=${q}&limit=3&fields=isbn,cover_i`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.docs) {
+        for (const doc of data.docs) {
+          if (doc.cover_i) {
+            const url = `https://covers.openlibrary.org/b/id/${doc.cover_i}-L.jpg`;
+            coverCache[key] = url;
+            return url;
+          }
+          if (doc.isbn?.[0]) {
+            const url = `https://covers.openlibrary.org/b/isbn/${doc.isbn[0]}-L.jpg`;
+            // Check if the image actually exists (Open Library returns a 1px placeholder)
+            const probe = await fetch(url, { method:'HEAD' }).catch(() => null);
+            if (probe?.headers?.get('content-length') > 1000) {
+              coverCache[key] = url;
+              return url;
+            }
+          }
+        }
+      }
+    }
+  } catch(e) {}
+
+  coverCache[key] = null;
+  return null;
+}
+
+// ── RENDER HELPERS ─────────────────────────────────────────
+function sortByDate(arr) {
+  return [...arr].sort((a, b) => {
+    const da = a.dateAdded?.toDate ? a.dateAdded.toDate() : new Date(a.dateAdded||0);
+    const db2 = b.dateAdded?.toDate ? b.dateAdded.toDate() : new Date(b.dateAdded||0);
+    return db2 - da;
+  });
+}
+function fmtDate(val) {
+  if (!val) return '—';
+  const d = val?.toDate ? val.toDate() : new Date(val);
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function fmtDateShort(val) {
+  if (!val) return '—';
+  const d = val?.toDate ? val.toDate() : new Date(val);
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'2-digit' });
+}
+
+// ── COVER HTML ─────────────────────────────────────────────
+function coverWrapHTML(book, classes='book-cover-wrap') {
+  const col = spineCol(book.title);
+  const id = `cv-${book.id}`;
+  if (book.coverUrl) {
+    return `<div class="${classes}">
+      <img class="book-cover-img" src="${esc(book.coverUrl)}" alt="${esc(book.title)}" loading="lazy"
+        onerror="this.style.display='none';document.getElementById('${id}-fb').style.display='flex'">
+      <div class="book-cover-fallback" id="${id}-fb" style="display:none">
+        <div class="spine-stripe" style="background:${col}"></div>
+        <div class="fallback-title">${esc(book.title)}</div>
+        <div class="fallback-author">${esc(book.author)}</div>
+      </div>
+    </div>`;
+  }
+  return `<div class="${classes}">
+    <div class="book-cover-fallback" id="${id}-load">
+      <div class="spine-stripe" style="background:${col}"></div>
+      <div>
+        <div class="fallback-title">${esc(book.title)}</div>
+        <div class="fallback-author">${esc(book.author)}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// After rendering, async-load covers for books that don't have one cached
+function lazyLoadCovers(bookList) {
+  bookList.forEach(async b => {
+    if (b.coverUrl) return;
+    const url = await fetchCover(b.title, b.author);
+    if (url) {
+      // Update the rendered fallback to show the cover
+      const fbEl = document.getElementById(`cv-${b.id}-load`);
+      const fbEl2 = document.getElementById(`cv-${b.id}-fb`);
+      if (fbEl) {
+        fbEl.innerHTML = `<img class="book-cover-img" src="${esc(url)}" alt="${esc(b.title)}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`;
+      }
+      if (fbEl2) {
+        // Already has an img, swap fallback
+      }
+      // Cache it in memory (don't persist every cover URL to Firestore to avoid writes)
+    }
+  });
+}
+
+// ── RENDER ALL ─────────────────────────────────────────────
+function renderAll() {
+  renderStats();
+  renderRecent();
+  renderShelf('my');
+  renderShelf('beth');
+  updateBadges();
+  if (searchQuery) renderSearch();
+}
+
+function renderStats() {
+  const mine = books.filter(b => b.owner==='me').length;
+  const beth = books.filter(b => b.owner==='beth').length;
+  document.getElementById('stats-pill').textContent = `${books.length} books · ${mine}+${beth}`;
+  document.getElementById('st-total').textContent = books.length;
+  document.getElementById('st-mine').textContent = mine;
+  document.getElementById('st-beth').textContent = beth;
+  const sorted = sortByDate(books);
+  document.getElementById('st-last').textContent = sorted[0] ? fmtDateShort(sorted[0].dateAdded) : '—';
+}
+
+function updateBadges() {
+  const mine = books.filter(b => b.owner==='me').length;
+  const beth = books.filter(b => b.owner==='beth').length;
+  const bm = document.getElementById('badge-my');
+  const bb2 = document.getElementById('badge-beth');
+  bm.textContent = mine; bm.classList.toggle('show', mine > 0);
+  bb2.textContent = beth; bb2.classList.toggle('show', beth > 0);
+}
+
+function renderRecent() {
+  const list = sortByDate(books).slice(0, settings.recentCount);
+  document.getElementById('recent-sub').textContent = `Last ${settings.recentCount} books across both shelves`;
+  const el = document.getElementById('recent-list');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty"><span class="empty-icon">📖</span><p>Your shelves are empty!<br>Tap <strong>+</strong> to add your first book.</p></div>`;
+    return;
+  }
+  el.innerHTML = list.map(recentItemHTML).join('');
+  lazyLoadCovers(list);
+}
+
+function recentItemHTML(b) {
+  const col = spineCol(b.title);
+  const who = b.owner === 'beth' ? "Beth's" : 'Mine';
+  const coverHtml = b.coverUrl
+    ? `<img src="${esc(b.coverUrl)}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<div class=recent-spine-strip style=background:${col}></div>'">`
+    : `<div class="recent-spine-strip" style="background:${col}"></div>
+       <div id="rv-${b.id}" style="display:none;width:100%;height:100%"></div>`;
+  return `<div class="recent-item" onclick="openDetail('${b.id}')">
+    <div class="recent-cover">${coverHtml}</div>
+    <div class="recent-info">
+      <div class="recent-title">${esc(b.title)}</div>
+      <div class="recent-author">${esc(b.author)}</div>
+      ${b.notes ? `<div class="recent-note">"${esc(b.notes)}"</div>` : ''}
+    </div>
+    <div class="recent-meta">
+      <div class="recent-who">${who}</div>
+      <div class="recent-date">${fmtDateShort(b.dateAdded)}</div>
+    </div>
+    <div class="recent-btns" onclick="event.stopPropagation()">
+      <button class="icon-btn" onclick="openEditModal('${b.id}')" title="Edit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
+      <button class="icon-btn del" onclick="openDelModal('${b.id}','${esc(b.title)}')" title="Delete">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </button>
+    </div>
+  </div>`;
+}
+
+function renderShelf(who) {
+  const owner = who === 'my' ? 'me' : 'beth';
+  const filtered = [...books.filter(b => b.owner === owner)].sort((a,b2) => a.title.localeCompare(b2.title));
+  document.getElementById(who+'-sub').textContent = `${filtered.length} book${filtered.length!==1?'s':''}`;
+  const grid = document.getElementById(who+'-grid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><span class="empty-icon">${who==='my'?'📚':'📗'}</span><p>${who==='my'?'Nothing on your shelf yet.':'Nothing on Beth\'s shelf yet.'}</p></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(bookCardHTML).join('');
+  lazyLoadCovers(filtered);
+}
+
+function bookCardHTML(b) {
+  const isOwner = b.owner === 'beth';
+  return `<div class="book-card" onclick="openDetail('${b.id}')">
+    ${isOwner ? `<div class="book-owner-dot"></div>` : ''}
+    ${coverWrapHTML(b)}
+    <div class="book-info">
+      <div class="book-info-title">${esc(b.title)}</div>
+      <div class="book-info-author">${esc(b.author)}</div>
+      <div class="book-info-date">${fmtDateShort(b.dateAdded)}</div>
+    </div>
+  </div>`;
+}
+
+function renderSearch() {
+  const q = searchQuery.toLowerCase();
+  const results = books.filter(b =>
+    b.title?.toLowerCase().includes(q) || b.author?.toLowerCase().includes(q)
+  );
+  document.getElementById('search-sub').textContent = `${results.length} result${results.length!==1?'s':''}`;
+  const el = document.getElementById('search-results');
+  if (!results.length) {
+    el.innerHTML = `<div class="empty"><span class="empty-icon">🔍</span><p>No books match "${esc(searchQuery)}".</p></div>`;
+    return;
+  }
+  el.innerHTML = results.map(recentItemHTML).join('');
+  lazyLoadCovers(results);
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────
+window.navigate = function(page) {
+  if (page !== 'search' && searchQuery) {
+    clearSearch();
+    return;
+  }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+page)?.classList.add('active');
+  document.getElementById('nav-'+page)?.classList.add('active');
+  currentPage = page;
+  window.scrollTo(0,0);
+};
+
+window.handleSearch = function(val) {
+  searchQuery = val.trim().toLowerCase();
+  document.getElementById('search-clear').classList.toggle('visible', !!val);
+  if (searchQuery) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-search').classList.add('active');
+    renderSearch();
+  } else {
+    clearSearch();
+  }
+};
+
+window.clearSearch = function() {
+  searchQuery = '';
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-clear').classList.remove('visible');
+  navigate(currentPage === 'search' ? 'home' : currentPage);
+};
+
+// ── DETAIL MODAL ───────────────────────────────────────────
+window.openDetail = function(id) {
+  const b = books.find(x => x.id === id);
+  if (!b) return;
+  activeDetailId = id;
+  document.getElementById('detail-shelf-label').textContent = b.owner === 'beth' ? "Beth's Shelf" : 'My Shelf';
+  document.getElementById('detail-title').textContent = b.title;
+  document.getElementById('detail-author').textContent = b.author;
+  document.getElementById('detail-date').textContent = 'Added ' + fmtDate(b.dateAdded);
+
+  const notesEl = document.getElementById('detail-notes');
+  if (b.notes) { notesEl.textContent = `"${b.notes}"`; notesEl.style.display='block'; }
+  else { notesEl.style.display='none'; }
+
+  const img = document.getElementById('detail-cover-img');
+  const fb = document.getElementById('detail-cover-fallback');
+  const coverToUse = b.coverUrl || coverCache[`${b.title}|${b.author}`.toLowerCase()];
+  if (coverToUse) {
+    img.src = coverToUse; img.style.display='block';
+    fb.style.display='none';
+  } else {
+    img.style.display='none'; fb.style.display='flex';
+    fb.querySelector('span').textContent = b.title;
+    // Try to load cover async
+    fetchCover(b.title, b.author).then(url => {
+      if (url) { img.src=url; img.style.display='block'; fb.style.display='none'; }
+    });
+  }
+  openOverlay('detail-overlay');
+};
+
+window.editFromDetail = function() {
+  closeOverlay('detail-overlay');
+  setTimeout(() => openEditModal(activeDetailId), 200);
+};
+window.deleteFromDetail = function() {
+  closeOverlay('detail-overlay');
+  const b = books.find(x => x.id === activeDetailId);
+  if (b) setTimeout(() => openDelModal(activeDetailId, b.title), 200);
+};
+
+// ── ADD / EDIT MODAL ───────────────────────────────────────
+window.openAddModal = function() {
+  document.getElementById('modal-title').textContent = 'Add a Book';
+  document.getElementById('edit-id').value = '';
+  document.getElementById('form-title').value = '';
+  document.getElementById('form-author').value = '';
+  document.getElementById('form-notes').value = '';
+  document.getElementById('form-cover-url').value = '';
+  document.getElementById('cover-preview-wrap').style.display = 'none';
+  selectOwner(currentPage === 'beth' ? 'beth' : 'me');
+  document.getElementById('form-submit').textContent = 'Add to Shelf';
+  document.getElementById('form-submit').disabled = true;
+  openOverlay('book-overlay');
+  setTimeout(() => document.getElementById('form-title').focus(), 320);
+};
+
+window.openEditModal = function(id) {
+  const b = books.find(x => x.id === id);
+  if (!b) return;
+  document.getElementById('modal-title').textContent = 'Edit Book';
+  document.getElementById('edit-id').value = id;
+  document.getElementById('form-title').value = b.title;
+  document.getElementById('form-author').value = b.author;
+  document.getElementById('form-notes').value = b.notes||'';
+  document.getElementById('form-cover-url').value = b.coverUrl||'';
+  selectOwner(b.owner);
+  document.getElementById('form-submit').textContent = 'Save Changes';
+  document.getElementById('form-submit').disabled = false;
+
+  // Show cover if available
+  if (b.coverUrl) {
+    showCoverPreview(b.coverUrl, 'Saved cover', true);
+  } else {
+    document.getElementById('cover-preview-wrap').style.display = 'none';
+    triggerCoverSearch();
+  }
+  openOverlay('book-overlay');
+};
+
+window.selectOwner = function(o) {
+  selectedOwner = o;
+  document.getElementById('own-me').classList.toggle('active', o==='me');
+  document.getElementById('own-beth').classList.toggle('active', o==='beth');
+};
+
+// Live cover search as user types
+window.onTitleInput = function() {
+  updateSubmitBtn();
+  clearTimeout(coverSearchTimer);
+  coverSearchTimer = setTimeout(triggerCoverSearch, 900);
+};
+window.onAuthorInput = function() {
+  updateSubmitBtn();
+  clearTimeout(coverSearchTimer);
+  coverSearchTimer = setTimeout(triggerCoverSearch, 900);
+};
+
+function updateSubmitBtn() {
+  const t = document.getElementById('form-title').value.trim();
+  const a = document.getElementById('form-author').value.trim();
+  document.getElementById('form-submit').disabled = !(t && a);
+}
+
+async function triggerCoverSearch() {
+  const title = document.getElementById('form-title').value.trim();
+  const author = document.getElementById('form-author').value.trim();
+  if (!title || !author) return;
+
+  showCoverPreview(null, 'Searching for cover…', false);
+  document.getElementById('cover-preview-title-label').textContent = title;
+
+  const url = await fetchCover(title, author);
+  if (url) {
+    document.getElementById('form-cover-url').value = url;
+    showCoverPreview(url, '✓ Cover found', true);
+  } else {
+    document.getElementById('form-cover-url').value = '';
+    showCoverPreview(null, 'No cover found — will use coloured spine', false);
+    document.getElementById('cover-spinner').style.display = 'none';
+  }
+}
+
+function showCoverPreview(url, statusText, isFound) {
+  document.getElementById('cover-preview-wrap').style.display = 'flex';
+  document.getElementById('cover-status').textContent = statusText;
+  document.getElementById('cover-status').className = 'cover-status' + (isFound ? ' found' : (statusText.includes('Search') ? ' searching' : ''));
+  const img = document.getElementById('cover-preview-img');
+  const spinner = document.getElementById('cover-spinner');
+  if (url) {
+    img.src = url; img.style.display='block';
+    spinner.style.display='none';
+  } else if (statusText.includes('Search')) {
+    img.style.display='none'; spinner.style.display='block';
+  } else {
+    img.style.display='none'; spinner.style.display='none';
+  }
+}
+
+window.clearCoverOverride = function() {
+  document.getElementById('form-cover-url').value = '';
+  document.getElementById('cover-preview-wrap').style.display = 'none';
+};
+
+window.submitBook = async function() {
+  const title = document.getElementById('form-title').value.trim();
+  const author = document.getElementById('form-author').value.trim();
+  if (!title || !author) return;
+  const notes = document.getElementById('form-notes').value.trim();
+  const coverUrl = document.getElementById('form-cover-url').value;
+  const editId = document.getElementById('edit-id').value;
+
+  document.getElementById('form-submit').disabled = true;
+  document.getElementById('form-submit').textContent = 'Saving…';
+
+  const data = { title, author, notes, owner: selectedOwner, coverUrl };
+  if (editId) {
+    await updateBook(editId, data);
+    showToast('Book updated!', 'ok');
+  } else {
+    await addBook(data);
+    showToast('Added to shelf! 📚', 'ok');
+  }
+  closeOverlay('book-overlay');
+};
+
+// ── DELETE ─────────────────────────────────────────────────
+window.openDelModal = function(id, title) {
+  document.getElementById('del-id').value = id;
+  document.getElementById('del-title').textContent = `Remove "${title}"?`;
+  openOverlay('del-overlay');
+};
+window.confirmDelete = async function() {
+  const id = document.getElementById('del-id').value;
+  await deleteBook(id);
+  if (activeDetailId === id) activeDetailId = null;
+  closeOverlay('del-overlay');
+  showToast('Book removed.', 'del');
+};
+
+// ── OVERLAY HELPERS ────────────────────────────────────────
+window.openOverlay = function(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+window.closeOverlay = function(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+};
+window.overlayClick = function(e, id) {
+  if (e.target === document.getElementById(id)) closeOverlay(id);
+};
+
+// ── TOAST ──────────────────────────────────────────────────
+let toastTimer;
+window.showToast = function(msg, type='') {
+  clearTimeout(toastTimer);
+  document.getElementById('toast-text').textContent = msg;
+  document.getElementById('toast-dot').className = 'toast-dot ' + type;
+  document.getElementById('toast').classList.add('show');
+  toastTimer = setTimeout(() => document.getElementById('toast').classList.remove('show'), 2600);
+};
+
+// ── THEME ──────────────────────────────────────────────────
+window.setTheme = function(t) {
+  settings.theme = t;
+  saveLocalSettings();
+  applyTheme(t);
+};
+function applyTheme(t) {
+  document.body.className = t === 'dark' ? '' : t;
+  ['dark','light','purple','green'].forEach(n =>
+    document.getElementById('sw-'+n).classList.toggle('active', n===t)
+  );
+  document.querySelector('meta[name="theme-color"]').setAttribute('content',
+    { dark:'#c17f42', light:'#b5702e', purple:'#a07de0', green:'#5aad6e' }[t]
+  );
+}
+
+window.setRecentCount = function(n) {
+  settings.recentCount = n;
+  saveLocalSettings();
+  [3,5,10].forEach(x => document.getElementById('cnt-'+x).classList.toggle('active', x===n));
+  renderRecent();
+};
+
+// ── SCROLL SHADOW ──────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('header').classList.toggle('scrolled', window.scrollY > 8);
+}, { passive: true });
+
+// ── KEYBOARD ───────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['book-overlay','detail-overlay','del-overlay'].forEach(closeOverlay);
+  }
+  if (e.key === 'Enter' && document.getElementById('book-overlay').classList.contains('open')) {
+    const t = document.getElementById('form-title').value.trim();
+    const a = document.getElementById('form-author').value.trim();
+    if (t && a) submitBook();
+  }
+});
+
+// ── PWA INSTALL ────────────────────────────────────────────
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstall = e;
+  document.getElementById('install-btn').style.display = 'inline-flex';
+  document.getElementById('install-note').textContent = '';
+});
+window.promptInstall = async function() {
+  if (!deferredInstall) return;
+  deferredInstall.prompt();
+  const result = await deferredInstall.userChoice;
+  if (result.outcome === 'accepted') {
+    document.getElementById('install-btn').style.display = 'none';
+    document.getElementById('install-note').textContent = '✅ Installed!';
+  }
+  deferredInstall = null;
+};
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-btn').style.display = 'none';
+  document.getElementById('install-note').textContent = '✅ App installed';
+  showToast('App installed! 🎉', 'ok');
+});
+
+// ── SERVICE WORKER ─────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(console.error);
+}
+
+// ── HIDE LOADING ───────────────────────────────────────────
+function hideLoading() {
+  setTimeout(() => {
+    const ls = document.getElementById('loading-screen');
+    ls.classList.add('gone');
+    setTimeout(() => ls.remove(), 400);
+  }, 300);
+}
+
+// ── BOOT ───────────────────────────────────────────────────
+settings = loadLocalSettings();
+applyTheme(settings.theme);
+[3,5,10].forEach(n => document.getElementById('cnt-'+n).classList.toggle('active', n===settings.recentCount));
+initFirebase();
+</script>
+</body>
+</html>
