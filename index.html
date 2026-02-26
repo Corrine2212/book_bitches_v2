@@ -115,15 +115,15 @@ body.green{
 /* ══════════════════════════════════════════════
    MOBILE BOTTOM NAV
 ══════════════════════════════════════════════ */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--nav);border-top:1px solid var(--border);display:flex;z-index:50;padding-bottom:max(env(safe-area-inset-bottom),16px);transition:background .35s}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px 0 8px;background:none;border:none;cursor:pointer;color:var(--text3);transition:color .2s;font-family:inherit;position:relative}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--nav);border-top:1px solid var(--border);display:flex;z-index:50;padding-bottom:max(env(safe-area-inset-bottom),20px);transition:background .35s}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:15px 0 10px;background:none;border:none;cursor:pointer;color:var(--text3);transition:color .2s;font-family:inherit;position:relative}
 .nav-btn.active{color:var(--accent)}
 .nav-btn svg{width:21px;height:21px;transition:transform .2s}
 .nav-btn.active svg{transform:scale(1.1)}
 .nav-btn span{font-size:10px;font-weight:600;letter-spacing:.04em}
 .nav-badge{position:absolute;top:6px;right:calc(50% - 18px);background:var(--accent);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 4px}
 .nav-badge.show{display:flex}
-.fab{position:fixed;bottom:calc(92px + max(env(safe-area-inset-bottom),16px));right:16px;width:54px;height:54px;border-radius:50%;background:var(--accent);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 22px var(--accent-g);z-index:45;transition:transform .18s,box-shadow .18s}
+.fab{position:fixed;bottom:calc(104px + max(env(safe-area-inset-bottom),20px));right:16px;width:54px;height:54px;border-radius:50%;background:var(--accent);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 22px var(--accent-g);z-index:45;transition:transform .18s,box-shadow .18s}
 .fab:hover{transform:scale(1.1);box-shadow:0 6px 30px var(--accent-g)}
 .fab:active{transform:scale(.94)}
 .fab svg{width:24px;height:24px}
@@ -131,7 +131,7 @@ body.green{
 /* ══════════════════════════════════════════════
    CONTENT & PAGES
 ══════════════════════════════════════════════ */
-.content{flex:1;padding:16px 16px calc(90px + max(env(safe-area-inset-bottom),16px))}
+.content{flex:1;padding:16px 16px calc(100px + max(env(safe-area-inset-bottom),20px))}
 @media(min-width:800px){.content{padding:24px 28px 32px}}
 .page{display:none}
 .page.active{display:block;animation:fadeUp .22s ease}
@@ -169,7 +169,7 @@ body.green{
 /* ══════════════════════════════════════════════
    RECENT LIST
 ══════════════════════════════════════════════ */
-.recent-list{display:flex;flex-direction:column;gap:8px}@media(min-width:800px){.recent-list{max-width:680px}}
+.recent-list{display:flex;flex-direction:column;gap:8px}
 .recent-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;transition:transform .15s,border-color .15s;cursor:pointer}
 .recent-item:hover{transform:translateX(4px);border-color:var(--accent)}
 .recent-cover{width:42px;height:60px;border-radius:5px;background:var(--card2);flex-shrink:0;overflow:hidden;position:relative}
@@ -762,48 +762,70 @@ async function fetchCover(title,author){
   const key=`${title}|${author}`.toLowerCase();
   if(coverCache[key]!==undefined)return coverCache[key];
 
-  // 1) Google Books
-  try{
-    const q=encodeURIComponent(`intitle:${title}+inauthor:${author}`);
-    const res=await fetch(`https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=5&fields=items(volumeInfo(imageLinks))`);
-    if(res.ok){
+  // helper — validate an image URL is real (not a placeholder 1x1)
+  async function checkImg(url){
+    try{const r=await fetch(url,{method:'HEAD'});const cl=r.headers.get('content-length');return r.ok&&(!cl||parseInt(cl)>2000)}catch{return false}
+  }
+
+  // 1) Google Books — try combined query first, then title-only fallback
+  async function tryGoogleBooks(query){
+    try{
+      const res=await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=8&fields=items(volumeInfo(imageLinks,title))`);
+      if(!res.ok)return null;
       const d=await res.json();
       if(d.items){
         for(const item of d.items){
           const img=item.volumeInfo?.imageLinks;
           if(img){
-            const url=(img.extraLarge||img.large||img.medium||img.thumbnail||img.smallThumbnail)
+            return(img.extraLarge||img.large||img.medium||img.thumbnail||img.smallThumbnail)
               .replace('http://','https://').replace('zoom=1','zoom=3').replace('&edge=curl','');
-            coverCache[key]=url;return url;
           }
         }
       }
+    }catch(e){}
+    return null;
+  }
+  let url=await tryGoogleBooks(`intitle:${title}+inauthor:${author}`);
+  if(!url)url=await tryGoogleBooks(`intitle:${title}`);
+  if(url){coverCache[key]=url;return url;}
+
+  // 2) bookcover.longitood.com — free Goodreads cover API, no key needed
+  try{
+    const res=await fetch(`https://bookcover.longitood.com/bookcover?book_title=${encodeURIComponent(title)}&author_name=${encodeURIComponent(author)}`);
+    if(res.ok){
+      const d=await res.json();
+      if(d.url&&d.url.startsWith('http')){coverCache[key]=d.url;return d.url;}
     }
   }catch(e){}
 
-  // 2) Open Library
-  try{
-    const q=encodeURIComponent(`${title} ${author}`);
-    const res=await fetch(`https://openlibrary.org/search.json?q=${q}&limit=3&fields=isbn,cover_i`);
-    if(res.ok){
+  // 3) Open Library — search by title+author, then title alone
+  async function tryOpenLibrary(query){
+    try{
+      const res=await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5&fields=isbn,cover_i,title`);
+      if(!res.ok)return null;
       const d=await res.json();
       if(d.docs){
         for(const doc of d.docs){
-          if(doc.cover_i){const url=`https://covers.openlibrary.org/b/id/${doc.cover_i}-L.jpg`;coverCache[key]=url;return url}
-          if(doc.isbn?.[0]){
-            const url=`https://covers.openlibrary.org/b/isbn/${doc.isbn[0]}-L.jpg`;
-            const p=await fetch(url,{method:'HEAD'}).catch(()=>null);
-            if(p?.headers?.get('content-length')>1000){coverCache[key]=url;return url}
+          if(doc.cover_i){return `https://covers.openlibrary.org/b/id/${doc.cover_i}-L.jpg`;}
+          if(doc.isbn){
+            for(const isbn of doc.isbn.slice(0,3)){
+              const u=`https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+              if(await checkImg(u))return u;
+            }
           }
         }
       }
-    }
-  }catch(e){}
+    }catch(e){}
+    return null;
+  }
+  url=await tryOpenLibrary(`${title} ${author}`);
+  if(!url)url=await tryOpenLibrary(title);
+  if(url){coverCache[key]=url;return url;}
 
-  // 3) Hardcover via Netlify Function proxy
+  // 4) Hardcover via Netlify Function proxy
   try{
     const res=await fetch(`/.netlify/functions/cover?title=${encodeURIComponent(title)}&author=${encodeURIComponent(author)}`);
-    if(res.ok){const d=await res.json();if(d.url){coverCache[key]=d.url;return d.url}}
+    if(res.ok){const d=await res.json();if(d.url){coverCache[key]=d.url;return d.url;}}
   }catch(e){}
 
   coverCache[key]=null;return null;
@@ -1172,17 +1194,37 @@ window.exportCSV=function(){
   showToast('CSV downloaded! 📊','ok');
 };
 
-window.exportExcel=function(){
-  // XML Spreadsheet format — opens natively in Excel
-  const rows=[['Title','Author','Shelf','Date Added','Notes'],...sortByDate(books).map(b=>{
+window.exportExcel=async function(){
+  // Load SheetJS on demand for a proper .xlsx file
+  if(!window.XLSX){
+    await new Promise((resolve,reject)=>{
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload=resolve;s.onerror=()=>{showToast('Could not load Excel library','del');reject()};
+      document.head.appendChild(s);
+    }).catch(()=>null);
+    if(!window.XLSX)return;
+  }
+  // Build rows with all app data
+  const rows=[['Title','Author','Shelf','Date Added','Notes','Read','Cover URL']];
+  sortByDate(books).forEach(b=>{
     const d=b.dateAdded?.toDate?b.dateAdded.toDate():new Date(b.dateAdded||0);
-    return[b.title||'',b.author||'',b.owner==='me'?'Connie':"Beth's",d.toLocaleDateString('en-GB'),b.notes||''];
-  })];
-  const xmlRows=rows.map(row=>`<Row>${row.map(cell=>`<Cell><Data ss:Type="String">${String(cell).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</Data></Cell>`).join('')}</Row>`).join('');
-  const xml=`<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Books"><Table>${xmlRows}</Table></Worksheet></Workbook>`;
-  const blob=new Blob([xml],{type:'application/vnd.ms-excel;charset=utf-8'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='book-bitches.xls';a.click();
-  showToast('Excel downloaded! 📊','ok');
+    rows.push([
+      b.title||'',
+      b.author||'',
+      b.owner==='me'?'Connie':"Beth's",
+      d.toLocaleDateString('en-GB'),
+      b.notes||'',
+      b.isRead?'Yes':'No',
+      b.coverUrl||''
+    ]);
+  });
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:40},{wch:25},{wch:10},{wch:14},{wch:50},{wch:6},{wch:60}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Books');
+  XLSX.writeFile(wb,'book-bitches.xlsx');
+  showToast(`Exported ${books.length} books as .xlsx! 📊`,'ok');
 };
 
 // ── DUPLICATES ────────────────────────────────────────────
