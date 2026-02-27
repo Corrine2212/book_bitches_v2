@@ -219,37 +219,27 @@ input[type="date"].form-input{-webkit-appearance:none;-moz-appearance:none;appea
 
 
 /* ══════════════════════════════════════════════
-   COVER PICKER
+   BOOK COVER SECTION
 ══════════════════════════════════════════════ */
-.cover-picker{margin-bottom:16px;display:none}
-.cover-picker.vis{display:block}
-.cover-picker-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.cover-picker-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-weight:600}
-.cover-picker-remove{font-size:11px;color:var(--del);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;display:none}
-.cover-picker-remove.vis{display:inline}
-.cover-source{margin-bottom:12px}
-.cover-source-head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.cover-source-name{font-size:11px;font-weight:600;color:var(--text2)}
-.cover-source-spinner{width:11px;height:11px;border:1.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:none}
-.cover-source-spinner.vis{display:block}
-.cover-source-status{font-size:11px;color:var(--text3);font-style:italic}
-.cover-thumbs{display:flex;gap:8px;flex-wrap:wrap}
-.cover-thumb{
-  width:58px;height:86px;border-radius:7px;background:var(--input);
-  border:2px solid var(--border);overflow:hidden;cursor:pointer;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:18px;
-  transition:border-color .15s,transform .15s;position:relative;
-}
-.cover-thumb:hover{border-color:var(--accent);transform:scale(1.05)}
-.cover-thumb.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-d)}
-.cover-thumb.selected::after{content:'✓';position:absolute;bottom:3px;right:3px;background:var(--accent);color:#fff;border-radius:50%;width:16px;height:16px;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
-.cover-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.cover-url-row{display:flex;gap:6px;margin-top:10px;align-items:center}
-.cover-url-input{flex:1;background:var(--input);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:16px;outline:none;transition:border-color .2s;caret-color:var(--accent);min-width:0}
-.cover-url-input:focus{border-color:var(--accent)}
-.cover-url-input::placeholder{color:var(--text3)}
-.cover-url-btn{padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-family:inherit;font-size:16px;cursor:pointer;transition:all .15s;white-space:nowrap;font-weight:500;flex-shrink:0}
-.cover-url-btn:hover{border-color:var(--accent);color:var(--accent)}
+.cover-section{margin-bottom:16px;display:none}
+.cover-section.vis{display:block}
+.cover-section-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-bottom:8px}
+.cover-row{display:flex;gap:12px;align-items:flex-start;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px}
+.cover-thumb-box{width:70px;height:104px;border-radius:8px;background:var(--input);border:1.5px solid var(--border);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative}
+.cover-thumb-box img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;display:none}
+.cover-thumb-box .cover-spinner{position:absolute;inset:0;display:none;align-items:center;justify-content:center}
+.cover-thumb-box .cover-spinner .mini-spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.cover-right{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.cover-url-field{width:100%;background:var(--input);border:1.5px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-family:inherit;font-size:16px;outline:none;transition:border-color .2s;caret-color:var(--accent);box-sizing:border-box}
+.cover-url-field:focus{border-color:var(--accent)}
+.cover-url-field::placeholder{color:var(--text3)}
+.cover-btns{display:flex;gap:8px}
+.cover-btn{flex:1;padding:9px 8px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--text2);font-family:inherit;font-size:14px;cursor:pointer;transition:all .15s;font-weight:500;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:5px}
+.cover-btn:hover{border-color:var(--accent);color:var(--accent)}
+.cover-btn.fetching{opacity:.6;pointer-events:none}
+.cover-status{font-size:11px;color:var(--text3);font-style:italic;min-height:14px}
+.cover-status.ok{color:var(--ok);font-style:normal}
+.cover-status.err{color:var(--del);font-style:normal}
 .submit-btn{width:100%;padding:14px;border-radius:10px;background:var(--accent);border:none;color:#fff;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px;transition:opacity .15s,transform .1s}
 .submit-btn:hover{opacity:.88}
 .submit-btn:active{transform:scale(.98)}
@@ -591,47 +581,30 @@ input[type="date"].form-input{-webkit-appearance:none;-moz-appearance:none;appea
       <button class="icon-btn" onclick="closeOverlay('book-overlay')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
 
-    <!-- COVER PICKER -->
-    <div class="cover-picker" id="cover-picker">
-      <div class="cover-picker-header">
-        <span class="cover-picker-label">Cover</span>
-        <button class="cover-picker-remove" id="cover-remove-btn" onclick="removeCover()">✕ Remove cover</button>
-      </div>
-
-      <!-- Google Books -->
-      <div class="cover-source" id="csrc-google">
-        <div class="cover-source-head">
-          <span class="cover-source-name">Google Books</span>
-          <div class="cover-source-spinner" id="cspin-google"></div>
-          <span class="cover-source-status" id="cstat-google"></span>
+    <!-- BOOK COVER -->
+    <div class="cover-section" id="cover-section">
+      <div class="cover-section-label">Book Cover</div>
+      <div class="cover-row">
+        <!-- Thumbnail preview -->
+        <div class="cover-thumb-box" id="cover-thumb-box">
+          <span id="cover-thumb-emoji">📖</span>
+          <img id="cover-thumb-img" alt="Cover">
+          <div class="cover-spinner" id="cover-spinner">
+            <div class="mini-spinner"></div>
+          </div>
         </div>
-        <div class="cover-thumbs" id="cthumbs-google"></div>
-      </div>
-
-      <!-- Open Library -->
-      <div class="cover-source" id="csrc-openlibrary">
-        <div class="cover-source-head">
-          <span class="cover-source-name">Open Library</span>
-          <div class="cover-source-spinner" id="cspin-openlibrary"></div>
-          <span class="cover-source-status" id="cstat-openlibrary"></span>
+        <!-- Right side: URL field + buttons -->
+        <div class="cover-right">
+          <input class="cover-url-field" id="cover-url-manual" placeholder="Paste image URL…" oninput="onManualUrlInput(this.value)">
+          <div class="cover-btns">
+            <button class="cover-btn" id="cover-use-btn" onclick="applyManualUrl()">Use URL</button>
+            <button class="cover-btn" id="cover-fetch-btn" onclick="triggerCoverSearch(true)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Auto-fetch
+            </button>
+          </div>
+          <div class="cover-status" id="cover-status"></div>
         </div>
-        <div class="cover-thumbs" id="cthumbs-openlibrary"></div>
-      </div>
-
-      <!-- Hardcover -->
-      <div class="cover-source" id="csrc-hardcover">
-        <div class="cover-source-head">
-          <span class="cover-source-name">Hardcover</span>
-          <div class="cover-source-spinner" id="cspin-hardcover"></div>
-          <span class="cover-source-status" id="cstat-hardcover"></span>
-        </div>
-        <div class="cover-thumbs" id="cthumbs-hardcover"></div>
-      </div>
-
-      <!-- Paste URL -->
-      <div class="cover-url-row">
-        <input class="cover-url-input" id="cover-url-manual" placeholder="Or paste any image URL…" oninput="onManualUrlInput(this.value)">
-        <button class="cover-url-btn" onclick="applyManualUrl()">Use</button>
       </div>
     </div>
 
@@ -813,155 +786,146 @@ async function deleteBook(id){
   books=books.filter(b=>b.id!==id);saveLocal();renderAll();
 }
 
-// ── COVER PICKER ─────────────────────────────────────────
+// ── COVER SECTION ────────────────────────────────────────
 const coverCache={};
-let activeCoverSearch=null;
+let selectedCoverUrl='';
 
-// Google Books — returns up to maxN image URLs from <img>-safe https URLs
-async function fetchGoogleCovers(title,author,maxN=5){
-  const urls=[];
+// ── Fetch helpers ─────────────────────────────────────────
+
+async function fetchGoogleCover(title,author){
   async function tryQ(q){
     try{
-      const r=await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=10&fields=items(volumeInfo(imageLinks))`);
-      if(!r.ok)return;
+      const r=await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5&fields=items(volumeInfo(imageLinks))`);
+      if(!r.ok)return null;
       const d=await r.json();
       for(const item of(d.items||[])){
         const il=item.volumeInfo?.imageLinks;
         if(il){
-          // Build best quality URL — swap zoom=1 for zoom=2, strip curl
-          const base=(il.extraLarge||il.large||il.medium||il.thumbnail||il.smallThumbnail||'');
-          const u=base.replace('http://','https://').replace('zoom=1','zoom=2').replace('&edge=curl','');
-          if(u&&!urls.includes(u))urls.push(u);
-          if(urls.length>=maxN)return;
+          const u=(il.extraLarge||il.large||il.medium||il.thumbnail||il.smallThumbnail||'');
+          if(u)return u.replace('http://','https://').replace('zoom=1','zoom=2').replace('&edge=curl','');
         }
       }
     }catch(e){}
+    return null;
   }
-  await tryQ(`intitle:${encodeURIComponent(title)}+inauthor:${encodeURIComponent(author)}`);
-  if(urls.length<3)await tryQ(`intitle:${encodeURIComponent(title)}`);
-  return urls;
+  return await tryQ(`intitle:${encodeURIComponent(title)}+inauthor:${encodeURIComponent(author)}`)
+      || await tryQ(`intitle:${encodeURIComponent(title)}`);
 }
 
-// Open Library — search for cover_i IDs, return direct cover URLs (no CORS issue)
-async function fetchOpenLibraryCovers(title,author,maxN=5){
-  const urls=[];
+async function fetchOpenLibraryCover(title,author){
   try{
     const q=encodeURIComponent(`${title} ${author}`);
-    const r=await fetch(`https://openlibrary.org/search.json?q=${q}&limit=10&fields=cover_i`);
-    if(!r.ok)return urls;
+    const r=await fetch(`https://openlibrary.org/search.json?q=${q}&limit=5&fields=cover_i`);
+    if(!r.ok)return null;
     const d=await r.json();
     for(const doc of(d.docs||[])){
-      if(doc.cover_i){
-        // -M is medium (~180px tall), reliable and fast
-        urls.push(`https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`);
-        if(urls.length>=maxN)break;
-      }
+      if(doc.cover_i)return`https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`;
     }
   }catch(e){}
-  // Title-only fallback
-  if(urls.length<2){
-    try{
-      const r=await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(title)}&limit=8&fields=cover_i`);
-      if(r.ok){const d=await r.json();for(const doc of(d.docs||[])){if(doc.cover_i){const u=`https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`;if(!urls.includes(u))urls.push(u);if(urls.length>=maxN)break;}}}
-    }catch(e){}
-  }
-  return urls;
+  return null;
 }
 
-// Hardcover — via Netlify proxy (token stays server-side)
-async function fetchHardcoverCovers(title,author){
+async function fetchHardcoverCover(title,author){
   try{
     const r=await fetch(`/.netlify/functions/cover?title=${encodeURIComponent(title)}&author=${encodeURIComponent(author)}`);
-    if(r.ok){const d=await r.json();if(d.url&&d.url.startsWith('http'))return[d.url];}
+    if(r.ok){const d=await r.json();if(d.url&&d.url.startsWith('http'))return d.url;}
   }catch(e){}
-  return[];
+  return null;
 }
 
-// Simple single-result fetch for lazy-loading grid/list cards
+// Simple single-result for lazy-loading grid/list cards
 async function fetchCover(title,author){
   const key=`${title}|${author}`.toLowerCase();
   if(coverCache[key]!==undefined)return coverCache[key];
-  const g=await fetchGoogleCovers(title,author,1);
-  if(g[0]){coverCache[key]=g[0];return g[0];}
-  const ol=await fetchOpenLibraryCovers(title,author,1);
-  if(ol[0]){coverCache[key]=ol[0];return ol[0];}
-  const hc=await fetchHardcoverCovers(title,author);
-  if(hc[0]){coverCache[key]=hc[0];return hc[0];}
-  coverCache[key]=null;return null;
+  const url=await fetchGoogleCover(title,author)
+          ||await fetchOpenLibraryCover(title,author)
+          ||await fetchHardcoverCover(title,author);
+  coverCache[key]=url||null;
+  return coverCache[key];
 }
 
-// ── COVER PICKER UI ───────────────────────────────────────
-let selectedCoverUrl='';
+// ── UI helpers ────────────────────────────────────────────
+function showCoverPanel(){document.getElementById('cover-section').classList.add('vis');}
 
-function showCoverPanel(){document.getElementById('cover-picker').classList.add('vis');}
-
-function setCoverPickerLoading(source){
-  document.getElementById(`cspin-${source}`).classList.add('vis');
-  document.getElementById(`cstat-${source}`).textContent='';
-  document.getElementById(`cthumbs-${source}`).innerHTML='';
-}
-
-function setCoverPickerResults(source,urls){
-  document.getElementById(`cspin-${source}`).classList.remove('vis');
-  const container=document.getElementById(`cthumbs-${source}`);
-  if(!urls||!urls.length){
-    document.getElementById(`cstat-${source}`).textContent='None found';
-    return;
-  }
-  document.getElementById(`cstat-${source}`).textContent='';
-  container.innerHTML='';
-  urls.forEach(url=>{
-    const thumb=document.createElement('div');
-    thumb.className='cover-thumb'+(url===selectedCoverUrl?' selected':'');
-    thumb.dataset.url=url;
-    // Plain <img> — no crossOrigin, no referrerPolicy — just works
-    const img=document.createElement('img');
+function setCoverImg(url){
+  const img=document.getElementById('cover-thumb-img');
+  const emoji=document.getElementById('cover-thumb-emoji');
+  const spinner=document.getElementById('cover-spinner');
+  spinner.style.display='none';
+  if(url){
     img.src=url;
-    img.alt='';
-    img.style.cssText='width:100%;height:100%;object-fit:cover;display:block';
-    img.onerror=()=>{thumb.style.display='none';};
-    thumb.appendChild(img);
-    thumb.addEventListener('click',()=>selectCoverThumb(url));
-    container.appendChild(thumb);
-  });
-  // Auto-select first cover from this source if nothing chosen yet
-  if(!selectedCoverUrl&&urls[0])selectCoverThumb(urls[0]);
+    img.style.display='block';
+    emoji.style.display='none';
+  }else{
+    img.style.display='none';
+    img.src='';
+    emoji.style.display='';
+  }
 }
 
-function selectCoverThumb(url){
-  selectedCoverUrl=url;
-  document.getElementById('form-cover-url').value=url;
-  document.querySelectorAll('.cover-thumb').forEach(t=>{
-    t.classList.toggle('selected',t.dataset.url===url);
-  });
-  document.getElementById('cover-remove-btn').classList.add('vis');
+function setCoverStatus(text,type=''){
+  const el=document.getElementById('cover-status');
+  el.textContent=text;
+  el.className='cover-status'+(type?' '+type:'');
 }
 
+function setFetching(on){
+  const btn=document.getElementById('cover-fetch-btn');
+  btn.classList.toggle('fetching',on);
+  btn.innerHTML=on
+    ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;animation:spin .7s linear infinite"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Searching…'
+    :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Auto-fetch';
+}
+
+// ── Cover actions ─────────────────────────────────────────
 window.triggerCoverSearch=async function(force=false){
   const title=document.getElementById('form-title').value.trim();
   const author=document.getElementById('form-author').value.trim();
   if(!title||!author)return;
   if(!force&&selectedCoverUrl)return;
-  if(force){selectedCoverUrl='';document.getElementById('form-cover-url').value='';}
+  if(force){
+    selectedCoverUrl='';
+    document.getElementById('form-cover-url').value='';
+    delete coverCache[`${title}|${author}`.toLowerCase()];
+  }
   showCoverPanel();
-  document.getElementById('cover-remove-btn').classList.remove('vis');
-  const token={};activeCoverSearch=token;
-  // All three sources fire in parallel, UI updates as each resolves
-  setCoverPickerLoading('google');
-  setCoverPickerLoading('openlibrary');
-  setCoverPickerLoading('hardcover');
-  fetchGoogleCovers(title,author,6).then(urls=>{
-    if(activeCoverSearch!==token)return;
-    setCoverPickerResults('google',urls);
-  });
-  fetchOpenLibraryCovers(title,author,6).then(urls=>{
-    if(activeCoverSearch!==token)return;
-    setCoverPickerResults('openlibrary',urls);
-  });
-  fetchHardcoverCovers(title,author).then(urls=>{
-    if(activeCoverSearch!==token)return;
-    setCoverPickerResults('hardcover',urls);
-  });
+  setCoverImg(null);
+  document.getElementById('cover-spinner').style.display='flex';
+  document.getElementById('cover-thumb-emoji').style.display='none';
+  setCoverStatus('Searching…');
+  setFetching(true);
+  const url=await fetchCover(title,author);
+  setFetching(false);
+  if(url){
+    selectedCoverUrl=url;
+    document.getElementById('form-cover-url').value=url;
+    document.getElementById('cover-url-manual').value=url;
+    setCoverImg(url);
+    setCoverStatus('✓ Cover found','ok');
+  }else{
+    setCoverImg(null);
+    document.getElementById('cover-spinner').style.display='none';
+    document.getElementById('cover-thumb-emoji').style.display='';
+    setCoverStatus('No cover found — try pasting a URL','err');
+  }
+};
+
+window.onManualUrlInput=function(val){
+  if(val.startsWith('http')){
+    showCoverPanel();
+    setCoverImg(val);
+    setCoverStatus('');
+  }
+};
+
+window.applyManualUrl=function(){
+  const val=document.getElementById('cover-url-manual').value.trim();
+  if(!val||!val.startsWith('http'))return;
+  selectedCoverUrl=val;
+  document.getElementById('form-cover-url').value=val;
+  setCoverImg(val);
+  setCoverStatus('✓ Cover set','ok');
+  showToast('Cover updated! 📖','ok');
 };
 
 window.removeCover=function(){
@@ -1143,12 +1107,11 @@ window.openAddModal=function(){
   document.getElementById('edit-id').value='';
   ['form-title','form-author','form-notes','form-date','cover-url-manual'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('form-read').checked=false;updateReadToggle();
-  // Reset cover picker
+  // Reset cover section
   selectedCoverUrl='';document.getElementById('form-cover-url').value='';
-  document.getElementById('cover-picker').classList.remove('vis');
-  document.getElementById('cover-remove-btn').classList.remove('vis');
-  ['google','openlibrary','hardcover'].forEach(s=>{document.getElementById('cthumbs-'+s).innerHTML='';document.getElementById('cstat-'+s).textContent='';document.getElementById('cspin-'+s).classList.remove('vis');});
   document.getElementById('cover-url-manual').value='';
+  document.getElementById('cover-section').classList.remove('vis');
+  setCoverImg(null);setCoverStatus('');
   document.getElementById('form-cover-url').value='';
   document.getElementById('cover-preview-wrap').style.display='none';
   selectOwner(currentPage==='beth'?'beth':'me');
@@ -1175,16 +1138,15 @@ window.openEditModal=function(id){
   selectOwner(b.owner);
   document.getElementById('form-submit').textContent='Save Changes';
   document.getElementById('form-submit').disabled=false;
-  // Reset picker, then trigger search after animation
+  // Reset cover section then populate
   selectedCoverUrl=b.coverUrl||'';
   document.getElementById('form-cover-url').value=b.coverUrl||'';
-  document.getElementById('cover-url-manual').value='';
-  ['google','openlibrary','hardcover'].forEach(s=>{document.getElementById('cthumbs-'+s).innerHTML='';document.getElementById('cstat-'+s).textContent='';document.getElementById('cspin-'+s).classList.remove('vis');});
+  document.getElementById('cover-url-manual').value=b.coverUrl||'';
   openOverlay('book-overlay');
   setTimeout(()=>{
     showCoverPanel();
-    document.getElementById('cover-remove-btn').classList.toggle('vis',!!b.coverUrl);
-    triggerCoverSearch(false);
+    if(b.coverUrl){setCoverImg(b.coverUrl);setCoverStatus('✓ Saved cover','ok');}
+    else{setCoverImg(null);setCoverStatus('');triggerCoverSearch(false);}
   },120);
 };
 
