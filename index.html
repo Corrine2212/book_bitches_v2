@@ -227,8 +227,8 @@ input[type="date"].form-input{-webkit-appearance:none;-moz-appearance:none;appea
 .cover-row{display:flex;gap:12px;align-items:flex-start;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px}
 .cover-thumb-box{width:70px;height:104px;border-radius:8px;background:var(--input);border:1.5px solid var(--border);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;position:relative}
 .cover-thumb-box img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;display:none}
-.cover-thumb-box .cover-spinner{position:absolute;inset:0;display:none;align-items:center;justify-content:center}
-.cover-thumb-box .cover-spinner .mini-spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.cover-thumb-box .cover-spinner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s;background:rgba(0,0,0,.45);border-radius:7px}.cover-thumb-box .cover-spinner.active{opacity:1}
+.cover-thumb-box .cover-spinner .mini-spinner{width:22px;height:22px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 .cover-right{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
 .cover-url-field{width:100%;background:var(--input);border:1.5px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-family:inherit;font-size:16px;outline:none;transition:border-color .2s;caret-color:var(--accent);box-sizing:border-box}
 .cover-url-field:focus{border-color:var(--accent)}
@@ -236,7 +236,7 @@ input[type="date"].form-input{-webkit-appearance:none;-moz-appearance:none;appea
 .cover-btns{display:flex;gap:8px}
 .cover-btn{flex:1;padding:9px 8px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--text2);font-family:inherit;font-size:14px;cursor:pointer;transition:all .15s;font-weight:500;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:5px}
 .cover-btn:hover{border-color:var(--accent);color:var(--accent)}
-.cover-btn.fetching{opacity:.6;pointer-events:none}
+.cover-btn.fetching{opacity:1;pointer-events:none;border-color:var(--accent);color:var(--accent);background:var(--accent-d)}
 .cover-status{font-size:11px;color:var(--text3);font-style:italic;min-height:14px}
 .cover-status.ok{color:var(--ok);font-style:normal}
 .cover-status.err{color:var(--del);font-style:normal}
@@ -851,7 +851,7 @@ function setCoverImg(url){
   const img=document.getElementById('cover-thumb-img');
   const emoji=document.getElementById('cover-thumb-emoji');
   const spinner=document.getElementById('cover-spinner');
-  spinner.style.display='none';
+  spinner.classList.remove('active');
   if(url){
     img.src=url;
     img.style.display='block';
@@ -873,7 +873,7 @@ function setFetching(on){
   const btn=document.getElementById('cover-fetch-btn');
   btn.classList.toggle('fetching',on);
   btn.innerHTML=on
-    ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;animation:spin .7s linear infinite"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Searching…'
+    ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;animation:spin .7s linear infinite"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Fetching…'
     :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Auto-fetch';
 }
 
@@ -890,7 +890,7 @@ window.triggerCoverSearch=async function(force=false){
   }
   showCoverPanel();
   setCoverImg(null);
-  document.getElementById('cover-spinner').style.display='flex';
+  document.getElementById('cover-spinner').classList.add('active');
   document.getElementById('cover-thumb-emoji').style.display='none';
   setCoverStatus('Searching…');
   setFetching(true);
@@ -904,7 +904,7 @@ window.triggerCoverSearch=async function(force=false){
     setCoverStatus('✓ Cover found','ok');
   }else{
     setCoverImg(null);
-    document.getElementById('cover-spinner').style.display='none';
+    document.getElementById('cover-spinner').classList.remove('active');
     document.getElementById('cover-thumb-emoji').style.display='';
     setCoverStatus('No cover found — try pasting a URL','err');
   }
@@ -1177,35 +1177,11 @@ function updateSubmitBtn(){
   document.getElementById('form-submit').disabled=!(t&&a);
 }
 
-window.triggerCoverSearch=async function(force=false){
-  const title=document.getElementById('form-title').value.trim();
-  const author=document.getElementById('form-author').value.trim();
-  if(!title||!author)return;
-  const existing=document.getElementById('form-cover-url').value;
-  if(existing&&!force)return; // don't re-search if we already have one
-  if(force)delete coverCache[`${title}|${author}`.toLowerCase()];
-  showCoverPreview(null,'Searching for cover…',false);
-  const url=await fetchCover(title,author);
-  if(url){document.getElementById('form-cover-url').value=url;showCoverPreview(url,'✓ Cover found',true)}
-  else{document.getElementById('form-cover-url').value='';showCoverPreview(null,'No cover found',false)}
-};
-
-
 window.updateReadToggle=function(){
   const checked=document.getElementById('form-read').checked;
   document.getElementById('read-toggle-track').style.background=checked?'var(--ok)':'var(--border)';
   document.getElementById('read-toggle-thumb').style.transform=checked?'translateX(20px)':'translateX(0)';
   document.getElementById('read-toggle-label').textContent=checked?'✓ Read':'Not read yet';
-};
-window.onManualUrlInput=function(val){
-  // nothing needed — applyManualUrl handles it
-};
-window.applyManualUrl=function(){
-  const val=document.getElementById('cover-url-manual').value.trim();
-  if(!val)return;
-  selectCoverThumb(val);
-  document.getElementById('cover-url-manual').value='';
-  showToast('Cover set! 📖','ok');
 };
 
 window.removeCover=function(){
