@@ -608,16 +608,6 @@ input[type="date"].form-input{-webkit-appearance:none;-moz-appearance:none;appea
         <div class="cover-thumbs" id="cthumbs-google"></div>
       </div>
 
-      <!-- Goodreads (via longitood) -->
-      <div class="cover-source" id="csrc-goodreads">
-        <div class="cover-source-head">
-          <span class="cover-source-name">Goodreads</span>
-          <div class="cover-source-spinner" id="cspin-goodreads"></div>
-          <span class="cover-source-status" id="cstat-goodreads"></span>
-        </div>
-        <div class="cover-thumbs" id="cthumbs-goodreads"></div>
-      </div>
-
       <!-- Open Library -->
       <div class="cover-source" id="csrc-openlibrary">
         <div class="cover-source-head">
@@ -626,6 +616,16 @@ input[type="date"].form-input{-webkit-appearance:none;-moz-appearance:none;appea
           <span class="cover-source-status" id="cstat-openlibrary"></span>
         </div>
         <div class="cover-thumbs" id="cthumbs-openlibrary"></div>
+      </div>
+
+      <!-- Hardcover -->
+      <div class="cover-source" id="csrc-hardcover">
+        <div class="cover-source-head">
+          <span class="cover-source-name">Hardcover</span>
+          <div class="cover-source-spinner" id="cspin-hardcover"></div>
+          <span class="cover-source-status" id="cstat-hardcover"></span>
+        </div>
+        <div class="cover-thumbs" id="cthumbs-hardcover"></div>
       </div>
 
       <!-- Paste URL -->
@@ -815,174 +815,152 @@ async function deleteBook(id){
 
 // ── COVER PICKER ─────────────────────────────────────────
 const coverCache={};
-let activeCoverSearch=null; // abort token for in-flight searches
+let activeCoverSearch=null;
 
-// Fetch multiple results from Google Books (up to maxN covers)
-async function fetchGoogleCovers(title,author,maxN=6){
+// Google Books — returns up to maxN image URLs from <img>-safe https URLs
+async function fetchGoogleCovers(title,author,maxN=5){
   const urls=[];
   async function tryQ(q){
     try{
-      const r=await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=12&fields=items(volumeInfo(imageLinks))`);
+      const r=await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=10&fields=items(volumeInfo(imageLinks))`);
       if(!r.ok)return;
       const d=await r.json();
       for(const item of(d.items||[])){
         const il=item.volumeInfo?.imageLinks;
         if(il){
-          const u=(il.extraLarge||il.large||il.medium||il.thumbnail||il.smallThumbnail)
-            .replace('http://','https://').replace('zoom=1','zoom=3').replace('&edge=curl','');
-          if(!urls.includes(u))urls.push(u);
+          // Build best quality URL — swap zoom=1 for zoom=2, strip curl
+          const base=(il.extraLarge||il.large||il.medium||il.thumbnail||il.smallThumbnail||'');
+          const u=base.replace('http://','https://').replace('zoom=1','zoom=2').replace('&edge=curl','');
+          if(u&&!urls.includes(u))urls.push(u);
           if(urls.length>=maxN)return;
         }
       }
     }catch(e){}
   }
-  await tryQ(`intitle:${title}+inauthor:${author}`);
-  if(urls.length<2)await tryQ(`intitle:${title}`);
+  await tryQ(`intitle:${encodeURIComponent(title)}+inauthor:${encodeURIComponent(author)}`);
+  if(urls.length<3)await tryQ(`intitle:${encodeURIComponent(title)}`);
   return urls;
 }
 
-// Fetch single cover from Goodreads via longitood proxy
-async function fetchGoodreadsCover(title,author){
+// Open Library — search for cover_i IDs, return direct cover URLs (no CORS issue)
+async function fetchOpenLibraryCovers(title,author,maxN=5){
+  const urls=[];
   try{
-    const r=await fetch(`https://bookcover.longitood.com/bookcover?book_title=${encodeURIComponent(title)}&author_name=${encodeURIComponent(author)}`);
-    if(r.ok){const d=await r.json();if(d.url?.startsWith('http'))return[d.url];}
+    const q=encodeURIComponent(`${title} ${author}`);
+    const r=await fetch(`https://openlibrary.org/search.json?q=${q}&limit=10&fields=cover_i`);
+    if(!r.ok)return urls;
+    const d=await r.json();
+    for(const doc of(d.docs||[])){
+      if(doc.cover_i){
+        // -M is medium (~180px tall), reliable and fast
+        urls.push(`https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`);
+        if(urls.length>=maxN)break;
+      }
+    }
+  }catch(e){}
+  // Title-only fallback
+  if(urls.length<2){
+    try{
+      const r=await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(title)}&limit=8&fields=cover_i`);
+      if(r.ok){const d=await r.json();for(const doc of(d.docs||[])){if(doc.cover_i){const u=`https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`;if(!urls.includes(u))urls.push(u);if(urls.length>=maxN)break;}}}
+    }catch(e){}
+  }
+  return urls;
+}
+
+// Hardcover — via Netlify proxy (token stays server-side)
+async function fetchHardcoverCovers(title,author){
+  try{
+    const r=await fetch(`/.netlify/functions/cover?title=${encodeURIComponent(title)}&author=${encodeURIComponent(author)}`);
+    if(r.ok){const d=await r.json();if(d.url&&d.url.startsWith('http'))return[d.url];}
   }catch(e){}
   return[];
 }
 
-// Fetch multiple covers from Open Library
-async function fetchOpenLibraryCovers(title,author,maxN=6){
-  const urls=[];
-  async function tryQ(q){
-    try{
-      const r=await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=8&fields=isbn,cover_i`);
-      if(!r.ok)return;
-      const d=await r.json();
-      for(const doc of(d.docs||[])){
-        if(doc.cover_i){
-          const u=`https://covers.openlibrary.org/b/id/${doc.cover_i}-L.jpg`;
-          if(!urls.includes(u))urls.push(u);
-        }
-        for(const isbn of(doc.isbn||[]).slice(0,2)){
-          const u=`https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
-          if(!urls.includes(u))urls.push(u);
-        }
-        if(urls.length>=maxN)return;
-      }
-    }catch(e){}
-  }
-  await tryQ(`${title} ${author}`);
-  if(urls.length<2)await tryQ(title);
-  return urls.slice(0,maxN);
-}
-
-// The simple single-result fetchCover used by lazy-load on grids/lists
+// Simple single-result fetch for lazy-loading grid/list cards
 async function fetchCover(title,author){
   const key=`${title}|${author}`.toLowerCase();
   if(coverCache[key]!==undefined)return coverCache[key];
-  // Try Google first
   const g=await fetchGoogleCovers(title,author,1);
   if(g[0]){coverCache[key]=g[0];return g[0];}
-  // Then Goodreads
-  const gr=await fetchGoodreadsCover(title,author);
-  if(gr[0]){coverCache[key]=gr[0];return gr[0];}
-  // Then Open Library
   const ol=await fetchOpenLibraryCovers(title,author,1);
   if(ol[0]){coverCache[key]=ol[0];return ol[0];}
+  const hc=await fetchHardcoverCovers(title,author);
+  if(hc[0]){coverCache[key]=hc[0];return hc[0];}
   coverCache[key]=null;return null;
 }
 
 // ── COVER PICKER UI ───────────────────────────────────────
 let selectedCoverUrl='';
 
-function showCoverPanel(){document.getElementById('cover-picker').classList.add('vis')}
+function showCoverPanel(){document.getElementById('cover-picker').classList.add('vis');}
 
 function setCoverPickerLoading(source){
   document.getElementById(`cspin-${source}`).classList.add('vis');
   document.getElementById(`cstat-${source}`).textContent='';
   document.getElementById(`cthumbs-${source}`).innerHTML='';
 }
-function preloadImg(url){
-  return new Promise(resolve=>{
-    const img=new Image();
-    img.onload=()=>resolve(url);
-    img.onerror=()=>resolve(null);
-    // Use referrerpolicy to help with CORS on Open Library etc.
-    img.referrerPolicy='no-referrer';
-    img.crossOrigin='anonymous';
-    img.src=url;
-    // Timeout after 6s
-    setTimeout(()=>resolve(null),6000);
-  });
-}
 
-async function setCoverPickerResults(source,urls){
+function setCoverPickerResults(source,urls){
   document.getElementById(`cspin-${source}`).classList.remove('vis');
   const container=document.getElementById(`cthumbs-${source}`);
   if(!urls||!urls.length){
     document.getElementById(`cstat-${source}`).textContent='None found';
     return;
   }
-  document.getElementById(`cstat-${source}`).textContent='Loading…';
-  // Preload all, filter out 404s/broken
-  const loaded=(await Promise.all(urls.map(preloadImg))).filter(Boolean);
   document.getElementById(`cstat-${source}`).textContent='';
-  if(!loaded.length){document.getElementById(`cstat-${source}`).textContent='None found';return;}
   container.innerHTML='';
-  loaded.forEach(url=>{
+  urls.forEach(url=>{
     const thumb=document.createElement('div');
     thumb.className='cover-thumb'+(url===selectedCoverUrl?' selected':'');
     thumb.dataset.url=url;
-    const img=new Image();
-    img.referrerPolicy='no-referrer';
-    img.style.cssText='width:100%;height:100%;object-fit:cover;display:block';
+    // Plain <img> — no crossOrigin, no referrerPolicy — just works
+    const img=document.createElement('img');
     img.src=url;
+    img.alt='';
+    img.style.cssText='width:100%;height:100%;object-fit:cover;display:block';
+    img.onerror=()=>{thumb.style.display='none';};
     thumb.appendChild(img);
     thumb.addEventListener('click',()=>selectCoverThumb(url));
     container.appendChild(thumb);
-    // Auto-select first good cover if nothing chosen yet
-    if(!selectedCoverUrl){selectCoverThumb(url);}
   });
+  // Auto-select first cover from this source if nothing chosen yet
+  if(!selectedCoverUrl&&urls[0])selectCoverThumb(urls[0]);
 }
+
 function selectCoverThumb(url){
   selectedCoverUrl=url;
   document.getElementById('form-cover-url').value=url;
-  // Highlight selected, deselect others
   document.querySelectorAll('.cover-thumb').forEach(t=>{
     t.classList.toggle('selected',t.dataset.url===url);
   });
   document.getElementById('cover-remove-btn').classList.add('vis');
-  showToast('Cover selected! 📖','ok');
 }
 
 window.triggerCoverSearch=async function(force=false){
   const title=document.getElementById('form-title').value.trim();
   const author=document.getElementById('form-author').value.trim();
   if(!title||!author)return;
-  if(!force&&selectedCoverUrl)return; // already have one, don't auto-re-search
-  // Clear selection on force
+  if(!force&&selectedCoverUrl)return;
   if(force){selectedCoverUrl='';document.getElementById('form-cover-url').value='';}
   showCoverPanel();
   document.getElementById('cover-remove-btn').classList.remove('vis');
-  // Run all three sources in parallel — update UI as each arrives
-  setCoverPickerLoading('google');
-  setCoverPickerLoading('goodreads');
-  setCoverPickerLoading('openlibrary');
   const token={};activeCoverSearch=token;
-  // Google
+  // All three sources fire in parallel, UI updates as each resolves
+  setCoverPickerLoading('google');
+  setCoverPickerLoading('openlibrary');
+  setCoverPickerLoading('hardcover');
   fetchGoogleCovers(title,author,6).then(urls=>{
     if(activeCoverSearch!==token)return;
     setCoverPickerResults('google',urls);
   });
-  // Goodreads
-  fetchGoodreadsCover(title,author).then(urls=>{
-    if(activeCoverSearch!==token)return;
-    setCoverPickerResults('goodreads',urls);
-  });
-  // Open Library
   fetchOpenLibraryCovers(title,author,6).then(urls=>{
     if(activeCoverSearch!==token)return;
     setCoverPickerResults('openlibrary',urls);
+  });
+  fetchHardcoverCovers(title,author).then(urls=>{
+    if(activeCoverSearch!==token)return;
+    setCoverPickerResults('hardcover',urls);
   });
 };
 
@@ -1169,7 +1147,7 @@ window.openAddModal=function(){
   selectedCoverUrl='';document.getElementById('form-cover-url').value='';
   document.getElementById('cover-picker').classList.remove('vis');
   document.getElementById('cover-remove-btn').classList.remove('vis');
-  ['google','goodreads','openlibrary'].forEach(s=>{document.getElementById('cthumbs-'+s).innerHTML='';document.getElementById('cstat-'+s).textContent='';document.getElementById('cspin-'+s).classList.remove('vis');});
+  ['google','openlibrary','hardcover'].forEach(s=>{document.getElementById('cthumbs-'+s).innerHTML='';document.getElementById('cstat-'+s).textContent='';document.getElementById('cspin-'+s).classList.remove('vis');});
   document.getElementById('cover-url-manual').value='';
   document.getElementById('form-cover-url').value='';
   document.getElementById('cover-preview-wrap').style.display='none';
@@ -1201,7 +1179,7 @@ window.openEditModal=function(id){
   selectedCoverUrl=b.coverUrl||'';
   document.getElementById('form-cover-url').value=b.coverUrl||'';
   document.getElementById('cover-url-manual').value='';
-  ['google','goodreads','openlibrary'].forEach(s=>{document.getElementById('cthumbs-'+s).innerHTML='';document.getElementById('cstat-'+s).textContent='';document.getElementById('cspin-'+s).classList.remove('vis');});
+  ['google','openlibrary','hardcover'].forEach(s=>{document.getElementById('cthumbs-'+s).innerHTML='';document.getElementById('cstat-'+s).textContent='';document.getElementById('cspin-'+s).classList.remove('vis');});
   openOverlay('book-overlay');
   setTimeout(()=>{
     showCoverPanel();
