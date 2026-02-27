@@ -1007,6 +1007,20 @@ function lazyLoadCovers(list){
     if(b.coverUrl)return;
     const url=await fetchCover(b.title,b.author);
     if(!url)return;
+    // Update the in-memory book object so other views don't re-fetch
+    b.coverUrl=url;
+    // Persist to Firebase so it's never fetched again
+    if(db){
+      try{await updateDoc(doc(db,'books',b.id),{coverUrl:url});}
+      catch(e){console.warn('Could not save cover to Firebase:',e);}
+    }else{
+      // localStorage fallback — update the stored entry
+      try{
+        const stored=JSON.parse(localStorage.getItem('books')||'[]');
+        const entry=stored.find(x=>x.id===b.id);
+        if(entry){entry.coverUrl=url;localStorage.setItem('books',JSON.stringify(stored));}
+      }catch(e){}
+    }
     // Update recent/search view
     const rv=document.getElementById(`rv-${b.id}`);
     if(rv){rv.innerHTML=`<img src="${esc(url)}" style="width:100%;height:100%;object-fit:cover" alt="">`;rv.style.display='block';const strip=rv.previousElementSibling;if(strip?.classList?.contains('recent-spine-strip'))strip.style.display='none'}
