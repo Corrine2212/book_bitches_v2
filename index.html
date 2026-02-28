@@ -309,11 +309,18 @@ input[type="date"].form-input{-webkit-appearance:none;-moz-appearance:none;appea
 .settings-row.col{flex-direction:column;align-items:flex-start}
 .settings-label{font-size:14px;color:var(--text);font-weight:500}
 .settings-sub{font-size:12px;color:var(--text3);margin-top:2px}
-.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;margin-top:10px}
-.theme-swatch{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:6px;border-radius:6px;border:1.5px solid transparent;transition:all .15s;background:transparent}
-.theme-swatch:hover .swatch-dot{transform:scale(1.1);box-shadow:0 0 0 3px var(--accent-d)}.theme-swatch.active .swatch-dot{box-shadow:0 0 0 3px var(--accent)}
-.swatch-dot{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.12);overflow:hidden;flex-shrink:0;transition:transform .15s,box-shadow .15s}
-.swatch-label{font-size:11px;color:var(--text2);font-weight:500}
+.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;margin-top:12px}
+@media(min-width:500px){.theme-grid{grid-template-columns:repeat(4,1fr)}}
+.theme-swatch{cursor:pointer;border-radius:14px;border:2px solid var(--border);overflow:hidden;transition:border-color .18s,transform .15s,box-shadow .15s;background:var(--card2);position:relative}
+.theme-swatch:hover{transform:translateY(-2px);box-shadow:0 6px 20px var(--shadow)}
+.theme-swatch.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.theme-swatch.active::after{content:'✓';position:absolute;top:7px;right:9px;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,.45);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;line-height:18px;text-align:center}
+.swatch-palette{display:flex;height:52px;width:100%}
+.swatch-palette span{flex:1;display:block}
+.swatch-footer{padding:8px 10px;display:flex;align-items:center;justify-content:space-between}
+.swatch-label{font-size:12px;font-weight:600;color:var(--text)}
+.swatch-dots{display:flex;gap:4px;align-items:center}
+.swatch-dot-sm{width:8px;height:8px;border-radius:50%;border:1px solid rgba(255,255,255,.15)}
 .count-btns{display:flex;gap:6px}
 .count-btn{padding:7px 16px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--text3);font-family:inherit;font-size:14px;cursor:pointer;transition:all .15s}
 .count-btn.active{border-color:var(--accent);background:var(--accent-d);color:var(--accent);font-weight:600}
@@ -480,10 +487,74 @@ input[type="date"].form-input{-webkit-appearance:none;-moz-appearance:none;appea
           <div class="settings-row col">
             <div><div class="settings-label">Theme</div><div class="settings-sub">Pick your vibe</div></div>
             <div class="theme-grid">
-              <div class="theme-swatch" id="sw-dark" onclick="setTheme('dark')"><div class="swatch-dot" style="background:linear-gradient(135deg,#14110f 50%,#c17f42 50%)"></div><span class="swatch-label">Dark</span></div>
-              <div class="theme-swatch" id="sw-light" onclick="setTheme('light')"><div class="swatch-dot" style="background:linear-gradient(135deg,#faf6f1 50%,#b5702e 50%)"></div><span class="swatch-label">Light</span></div>
-              <div class="theme-swatch" id="sw-purple" onclick="setTheme('purple')"><div class="swatch-dot" style="background:linear-gradient(135deg,#0f0c17 50%,#a07de0 50%)"></div><span class="swatch-label">Purple</span></div>
-              <div class="theme-swatch" id="sw-green" onclick="setTheme('green')"><div class="swatch-dot" style="background:linear-gradient(135deg,#0c1410 50%,#5aad6e 50%)"></div><span class="swatch-label">Green</span></div>
+              <div class="theme-swatch" id="sw-dark" onclick="setTheme('dark')">
+                <div class="swatch-palette">
+                  <span style="background:#14110f"></span>
+                  <span style="background:#221e1a"></span>
+                  <span style="background:#2a2420"></span>
+                  <span style="background:#c17f42"></span>
+                  <span style="background:#e8e0d4"></span>
+                </div>
+                <div class="swatch-footer">
+                  <span class="swatch-label">Dark</span>
+                  <div class="swatch-dots">
+                    <div class="swatch-dot-sm" style="background:#14110f"></div>
+                    <div class="swatch-dot-sm" style="background:#c17f42"></div>
+                    <div class="swatch-dot-sm" style="background:#e8e0d4"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="theme-swatch" id="sw-light" onclick="setTheme('light')">
+                <div class="swatch-palette">
+                  <span style="background:#faf6f1"></span>
+                  <span style="background:#fff"></span>
+                  <span style="background:#f2ebe0"></span>
+                  <span style="background:#b5702e"></span>
+                  <span style="background:#2c2419"></span>
+                </div>
+                <div class="swatch-footer">
+                  <span class="swatch-label" style="color:#2c2419">Light</span>
+                  <div class="swatch-dots">
+                    <div class="swatch-dot-sm" style="background:#faf6f1;border-color:rgba(0,0,0,.15)"></div>
+                    <div class="swatch-dot-sm" style="background:#b5702e"></div>
+                    <div class="swatch-dot-sm" style="background:#2c2419"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="theme-swatch" id="sw-purple" onclick="setTheme('purple')">
+                <div class="swatch-palette">
+                  <span style="background:#0f0c17"></span>
+                  <span style="background:#1e1530"></span>
+                  <span style="background:#261b3a"></span>
+                  <span style="background:#a07de0"></span>
+                  <span style="background:#e2d9f3"></span>
+                </div>
+                <div class="swatch-footer">
+                  <span class="swatch-label">Purple</span>
+                  <div class="swatch-dots">
+                    <div class="swatch-dot-sm" style="background:#0f0c17"></div>
+                    <div class="swatch-dot-sm" style="background:#a07de0"></div>
+                    <div class="swatch-dot-sm" style="background:#e2d9f3"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="theme-swatch" id="sw-green" onclick="setTheme('green')">
+                <div class="swatch-palette">
+                  <span style="background:#0c1410"></span>
+                  <span style="background:#17231b"></span>
+                  <span style="background:#1e2e22"></span>
+                  <span style="background:#5aad6e"></span>
+                  <span style="background:#d4e8d8"></span>
+                </div>
+                <div class="swatch-footer">
+                  <span class="swatch-label">Green</span>
+                  <div class="swatch-dots">
+                    <div class="swatch-dot-sm" style="background:#0c1410"></div>
+                    <div class="swatch-dot-sm" style="background:#5aad6e"></div>
+                    <div class="swatch-dot-sm" style="background:#d4e8d8"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
