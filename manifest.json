@@ -1,7 +1,7 @@
 {
   "name": "Book Bitches",
   "short_name": "Book Bitches",
-  "description": "Our shared bookshelf — see what we own so we don't buy the same books twice",
+  "description": "Our shared bookshelf",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#14110f",
